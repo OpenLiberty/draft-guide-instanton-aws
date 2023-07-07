@@ -7,26 +7,25 @@
 // Contributors:
 //     IBM Corporation
 //
-:projectid: cloud-aws
+:projectid: instantOn-aws
 :page-layout: guide-multipane
 :page-duration: 45 minutes
-:page-releasedate: 2019-05-29
-:page-description: Explore how to deploy microservices to Amazon Elastic Container Service for Kubernetes (EKS) on Amazon Web Services (AWS).
-:page-tags: ['Kubernetes', 'Docker', 'Cloud']
+:page-releasedate: 2023-07-06
+:page-description: Learn how to deploy microservices in Open Liberty InstantOn container and enable IBM Semeru CloudCompiler to Amazon Elastic Kubernetes Service (EKS) on Amazon Web Services (AWS) to speed up the start-upprocess of your application.
+:page-tags: ['Kubernetes', 'Podman', 'Semeru Cloud']
 :page-permalink: /guides/{projectid}
 :page-related-guides: ['kubernetes-intro', 'kubernetes-microprofile-config', 'kubernetes-microprofile-health', 'istio-intro']
 :common-includes: https://raw.githubusercontent.com/OpenLiberty/guides-common/prod
 :source-highlighter: prettify
-:page-seo-title: Deploying Java microservices on Amazon Web Services (AWS) with Kubernetes
-:page-seo-description: A getting started tutorial with examples on how to deploy Java microservices to Amazon Elastic Container Service for Kubernetes (EKS) using Amazon Elastic Container Registry (ECR) as a private container registry.
+:page-seo-title: Deploying Java microservices in Open Liberty InstantOn container to Amazon Elastic Kubernetes Service (AWSEKS) ) on Amazon Web Services (AWS)
+:page-seo-description: A getting started tutorial with examples on how to deploy Java microservices in Open Liberty InstantOncontainer and enable IBM Semeru Cloud Compiler (SCC) to Amazon Elastic Kubernetes Service (EKS) onAmazon Web Services (AWS) by using Amazon Elastic Container Registry (ECR) as a private container registry.
 :guide-author: Open Liberty
 = Deploying microservices to Amazon Web Services
 
 [.hidden]
 NOTE: This repository contains the guide documentation source. To view the guide in published form, view it on the https://openliberty.io/guides/{projectid}.html[Open Liberty website^].
 
-Explore how to deploy microservices to Amazon Elastic Container Service for Kubernetes (EKS) on Amazon Web Services (AWS).
-
+Deploying microservices in Open Liberty InstantOn container to Amazon Web Services
 :kube: Kubernetes
 :hashtag: #
 :win: WINDOWS
@@ -44,11 +43,9 @@ Explore how to deploy microservices to Amazon Elastic Container Service for Kube
 
 You will learn how to deploy two microservices in Open Liberty containers to a {kube} cluster on Amazon Elastic Container Service for Kubernetes (EKS). 
 
-Kubernetes is an open-source container orchestrator that automates many tasks that are involved in deploying, managing, and scaling containerized applications. If you would like to learn more about Kubernetes, check out the https://openliberty.io/guides/kubernetes-intro.html[Deploying microservices to Kubernetes^] guide.
-
-There are different cloud-based solutions for running your Kubernetes workloads. Cloud-based infrastructure enables you to focus on developing your microservices without worrying about low-level infrastructure details for deployment. Using a cloud helps you to easily scale and manage your microservices in a high-availability setup.
-
 Amazon Web Services (AWS) offers a managed Kubernetes service called Amazon Elastic Container Service for {kube} (EKS). EKS simplifies the process of running Kubernetes on AWS without needing to install or maintain your Kubernetes control plane. It provides a hosted {kube} cluster where you can deploy your microservices. You will use EKS with Amazon Elastic Container Registry (ECR). Amazon ECR is a private registry that is used to store and distribute your container images. Note, because EKS is not free, there is a small cost that is associated with running this guide. See the official https://aws.amazon.com/eks/pricing/[Amazon EKS pricing^] documentation for more details.
+
+Open Liberty InstantOn provides fast startup times for MicroProfile and Jakarta EE applications. With InstantOn, your applications can start in milliseconds, without compromising on throughput, memory, development-production parity, or Java language features.
 
 The two microservices you will deploy are called `system` and `inventory`. The `system` microservice returns the JVM system properties of the running container. It also returns the pod’s name in the HTTP header, making replicas easy to distinguish from each other. The `inventory` microservice adds the properties from the `system` microservice to the inventory. This demonstrates how communication can be established between pods inside a cluster.
 
@@ -61,7 +58,9 @@ The two microservices you will deploy are called `system` and `inventory`. The `
 
 Before you begin, the following additional tools need to be installed:
 
-* *Docker:* You need containerization software for building containers. Kubernetes supports various container types, but you will use Docker in this guide. For installation instructions, refer to the official https://docs.docker.com/install/[Docker^] documentation.
+* *Linux:* You will need Linux Operating System with a kernel version of 5.9 or greater to use InstantOn. If you are using RedHat, you need atleast . 
+
+* *Podman:* You need containerization software for building containers. Kubernetes supports various container types, but you will use the latest available version of Podman in this guide. For installation instructions, refer to the official https://podman.io/docs/installation documentation.
 
 * *kubectl:* You need the Kubernetes command-line tool `kubectl` to interact with your Kubernetes cluster. See the official https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl[Install and Set Up kubectl^] documentation for information about downloading and setting up `kubectl` on your platform.
 
@@ -71,14 +70,7 @@ Before you begin, the following additional tools need to be installed:
 
 * *AWS CLI:* You will need to use the AWS Command Line Interface (CLI). For this guide, use AWS CLI Version 2, which is intended for use in production environment. All installers for AWS CLI version 2 include and use an embedded copy of Python, independent of any other Python version that you might have installed. Install the AWS CLI by following the instructions in the official https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html[Installing the AWS CLI^] documentation. 
 
-To verify that the AWS CLI is installed correctly, run the following command:
-
-[role=command]
-```
-aws --version
-```
-
-
+Information regarding building an InstantOn application image can be found on https://openliberty.io/docs/latest/instanton.html#run.
 
 // =================================================================================================
 // Getting Started
@@ -89,6 +81,69 @@ include::{common-includes}/gitclone.adoc[]
 
 // no "try what you'll build" section in this guide because it would be too long due to all setup the user will have to do.
 
+=== Try InstantOn image locally - 
+[#build]
+Building the InstantOn image with Podman and the checkpoint.sh script
+
+You can use the `checkpoint.sh` script to perform the application checkpoint by adding the `RUN checkpoint.sh` instruction to the end of your `Dockerfile` or `Containerfile` file. The execution of the `checkpoint.sh` must be the last `RUN` instruction during your container image build. This configuration performs the application process checkpoint and stores the process data as the last layer of the application container image. Currently, this script requires you to use Podman rather than Docker because Docker cannot grant the necessary Linux capabilities.
+
+The following image template example uses the `kernel-slim-java17-openj9-ubi` tag to build an image that uses the latest Open Liberty release with the IBM Semeru distribution of Java 17. This example uses the `afterAppStart` checkpoint option.
+
+[source,dockerfile]
+.Dockerfile
+----
+FROM icr.io/appcafe/open-liberty:kernel-slim-java17-openj9-ubi
+
+# Add a Liberty server configuration that includes all necessary features
+COPY --chown=1001:0  server.xml /config/
+
+# This script adds the requested XML snippets to enable Liberty features and grow the image to be fit-for-purpose.
+# This option is available only in the 'kernel-slim' image type. The 'full' and 'beta' tags already include all features.
+RUN features.sh
+
+# Add interim fixes (optional)
+COPY --chown=1001:0  interim-fixes /opt/ol/fixes/
+
+# Add an application
+COPY --chown=1001:0  Sample1.war /config/dropins/
+
+# This script adds the requested server configuration, applies any interim fixes, and populates caches to optimize the runtime.
+RUN configure.sh
+
+# This script performs an InstantOn checkpoint of the application.
+# The application can use beforeAppStart or afterAppStart to do the checkpoint.
+# The default is beforeAppStart when not specified
+RUN checkpoint.sh afterAppStart
+----
+
+Use the following Podman command to build the InstantOn application container image. To grant the necessary Linux capabilities to the container image build, this command must be run either as the `root` user or by using the `sudo` utility.
+
+[source,sh]
+----
+podman build \
+   -t dev.local/liberty-app-instanton \
+   --cap-add=CHECKPOINT_RESTORE \
+   --cap-add=SYS_PTRACE\
+   --cap-add=SETPCAP \
+   --security-opt seccomp=unconfined .
+----
+
+The three `--cap-add` options grant the three Linux capabilities that CRIU requires to perform the application process checkpoint during the container image build. The `--security-opt` option grants access to all Linux system calls to the container image build.
+
+Running an InstantOn application image locally
+
+If a host system is running the Linux kernel 5.9 or greater with the X86-64/AMD64 processor, you can run an InstantOn application image by using Podman or Docker locally. The following command runs the `liberty-app-instanton` InstantOn application image with Podman:
+
+[source,sh]
+----
+podman run \
+  --rm \
+  --cap-add=CHECKPOINT_RESTORE \
+  --cap-add=SETPCAP \
+  --security-opt seccomp=unconfined \
+  -p 9080:9080 \
+  liberty-app-instanton
+----
 
 // =================================================================================================
 // Creating a Kubernetes cluster on EKS
