@@ -70,11 +70,11 @@ Before you begin, the following additional tools need to be installed:
 
 * *AWS CLI:* You will need to use the AWS Command Line Interface (CLI). For this guide, use AWS CLI Version 2, which is intended for use in production environment. All installers for AWS CLI version 2 include and use an embedded copy of Python, independent of any other Python version that you might have installed. Install the AWS CLI by following the instructions in the official https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html[Installing the AWS CLI^] documentation. 
 
-Information regarding building an InstantOn application image can be found on https://openliberty.io/docs/latest/instanton.html#run.
-
 // =================================================================================================
 // Getting Started
 // =================================================================================================
+
+== Getting Started
 
 [role=command]
 include::{common-includes}/gitclone.adoc[]
@@ -144,6 +144,8 @@ podman run \
   -p 9080:9080 \
   liberty-app-instanton
 ----
+
+More detailed information on InstantOn application image can be found on https://openliberty.io/docs/latest/instanton.html#run.
 
 // =================================================================================================
 // Creating a Kubernetes cluster on EKS
