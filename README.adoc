@@ -209,15 +209,15 @@ include::finish/cluster.yaml[]
 The `eksctl` CLI tool greatly simplifies the process of creating clusters on EKS. To create your cluster, use the `eksctl create cluster` command:
 
 [role=command]
-
+```
 eksctl create cluster -f cluster.yaml
-
+```
 After your cluster is ready, EKS connects kubectl to the cluster. Verify that you’re connected to the cluster by checking the cluster’s nodes:
 
 [role=command]
-
+```
 kubectl get nodes
-
+```
 [source, role="no_copy"]
 ----
 NAME                            STATUS    ROLES     AGE       VERSION
