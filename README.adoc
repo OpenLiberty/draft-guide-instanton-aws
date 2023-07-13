@@ -309,7 +309,7 @@ sudo podman push <aws_account_id>.dkr.ecr.<region>.amazonaws.com/getting-started
 
 Now that your container images are built, deploy them using a Kubernetes resource definition.
 
-A Kubernetes resource definition is a yaml file that contains a description of all your deployments, services, or any other resources that you want to deploy. All resources can also be deleted from the cluster by using the same yaml file that you used to deploy them. The `kubernetes.yaml` resource definition file is provided for you. If you are interested in learning more about the Kubernetes resource definition, check out the https://openliberty.io/guides/kubernetes-intro.html[Deploying microservices to Kubernetes^] guide.
+A Kubernetes resource definition is a yaml file that contains a description of all your deployments, services, or any other resources that you want to deploy. All resources can also be deleted from the cluster by using the same yaml file that you used to deploy them. The `deployment.yaml` resource definition file is provided for you. If you are interested in learning more about the Kubernetes resource definition, check out the https://openliberty.io/guides/kubernetes-intro.html[Deploying microservices to Kubernetes^] guide. We can enable Semeru Cloud Compiler by turning `enable` to `true
  
 [role="code_command hotspot", subs="quotes"]
 ----
@@ -322,14 +322,14 @@ deployment.yaml
 ----
 include::finish/deployment.yaml[]
 ----
-[role="edit_command_text"]
-
+[role=command]
 ```
 kubectl apply -f deployment.yaml
 ```
 
 When the apps are deployed, run the following command to check the status of your pods:
-[role='command']
+
+[role=command]
 ```
 kubectl get pods
 ```
@@ -339,24 +339,26 @@ If all the pods are healthy and running, you see an output similar to the follow
 ----
 NAME                                    READY     STATUS    RESTARTS   AGE
 system-deployment-6bd97d9bf6-4ccds      1/1       Running   0          15s
-inventory-deployment-645767664f-nbtd9   1/1       Running   0          15s
 ----
 
 To check the semeru cloud compiler and instanton deployments, execute the following command:
 
+[role=command]
 ```
 kubectl get deployments
 ```
 
 To view the application logs, execute the following command:
 
+[role=command]
 ```
 kubectl logs deployment/open-liberty-instanton
 ```
 
 === Making requests to the microservices
 
-Before you can make a request to `[hostname]:31000` or `[hostname]:32000`, you must modify the security group to allow incoming traffic through ports `31000` and `32000`. To get the `group-id` of the security group, use the `aws ec2 describe-security-groups` command:
+Before you can make a request to `[hostname]:31000`, you must modify the security group to allow incoming traffic through ports `31000`. To get the `group-id` of the security group, use the `aws ec2 describe-security-groups` command:
+
 [role=command]
 ```
 aws ec2 describe-security-groups --filters Name=group-name,Values="*eksctl-guide-cluster-cluster-*" --query "SecurityGroups[*].IpPermissions[*].UserIdGroupPairs"
