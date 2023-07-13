@@ -323,6 +323,7 @@ deployment.yaml
 include::finish/deployment.yaml[]
 ----
 
+Deploy the application by running the following command:
 [role=command]
 ```
 kubectl apply -f deployment.yaml
