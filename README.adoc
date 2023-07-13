@@ -270,7 +270,7 @@ curl -L https://raw.githubusercontent.com/OpenLiberty/open-liberty-operator/main
 
 == Deploying microservices to Amazon Elastic Container Service for Kubernetes (EKS)
 
-In this section, you will learn how to deploy microservices in Open Liberty containers to a {kube} cluster on EKS. You will build and containerize the `system` and `inventory` microservices, push them to a container registry, and then deploy them to your {kube} cluster. 
+In this section, you will learn how to deploy microservices in Open Liberty containers to a Kubernetes cluster on EKS. You will build and containerize the `system` and `inventory` microservices, push them to a container registry, and then deploy them to your {kube} cluster. 
 
 // =================================================================================================
 // Pushing the images to a docker registry
@@ -278,21 +278,23 @@ In this section, you will learn how to deploy microservices in Open Liberty cont
 
 === Pushing the images to a container registry
 
-Create a repository for the instanton container image, in the private Amazon ECR registry, and take note of the repositoryUri value. It should match the <aws_account_id>.dkr.ecr.<region>.amazonaws.com/getting-started-instanton pattern. For example: 1234567890.dkr.ecr.us-east-1.amazonaws.com/getting-started-instanton. You will need this value when you create the deployment.yaml file to deploy the InstantOn application.
+Create a repository for the instanton container image, in the private Amazon ECR registry, and take note of the repositoryUri value. It should match the `<aws_account_id>.dkr.ecr.<region>.amazonaws.com/getting-started-instanton` pattern. For example: `1234567890.dkr.ecr.us-east-1.amazonaws.com/getting-started-instanton`. You will need this value when you create the `deployment.yaml` file to deploy the InstantOn application.
 
+[role=command]
 ```
 aws ecr create-repository --repository-name getting-started-instanton
 ```
 
 Next, authenticate to the registry using the following command so you can push or pull images using Podman:
 
+[role=command]
 ```
 aws ecr get-login-password | sudo podman login --username AWS --password-stdin <aws_account_id>.dkr.ecr.<region>.amazonaws.com
 ```
 
 After you are authenticated, you can tag and push the InstantOn image to the private ECR registry:
 
-
+[role=command]
 ```
 sudo podman tag dev.local/getting-started-instanton <aws_account_id>.dkr.ecr.<region>.amazonaws.com/getting-started-instanton
 
