@@ -188,8 +188,6 @@ aws configure list
 
 === Provisioning a cluster
 
-The `eksctl` CLI tool greatly simplifies the process of creating clusters on EKS. To create your cluster, use the `eksctl create cluster` command:
-
 [role="code_command hotspot", subs="quotes"]
 ----
 #Update the `cluster.yaml` file in the `start` directory.#
@@ -202,9 +200,18 @@ cluster.yaml
 
 [source, yaml, linenums, role='code_column']
 
-[role=command]
 ----
 include::finish/cluster.yaml[]
+
+The `eksctl` CLI tool greatly simplifies the process of creating clusters on EKS. To create your cluster, use the `eksctl create cluster` command:
+
+[role=command]
+----
+```
+eksctl create cluster -f cluster.yaml
+```
+
+[role=command]
 ----
 ```
 kubectl get nodes
@@ -299,9 +306,7 @@ sudo podman push <aws_account_id>.dkr.ecr.<region>.amazonaws.com/getting-started
 Now that your container images are built, deploy them using a Kubernetes resource definition.
 
 A Kubernetes resource definition is a yaml file that contains a description of all your deployments, services, or any other resources that you want to deploy. All resources can also be deleted from the cluster by using the same yaml file that you used to deploy them. The `kubernetes.yaml` resource definition file is provided for you. If you are interested in learning more about the Kubernetes resource definition, check out the https://openliberty.io/guides/kubernetes-intro.html[Deploying microservices to Kubernetes^] guide.
-
-
-
+ 
 [role="code_command hotspot", subs="quotes"]
 ----
 #Update the `deployment.yaml` file in the `start` directory.#
