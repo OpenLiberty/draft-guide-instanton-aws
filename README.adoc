@@ -188,6 +188,7 @@ aws configure list
 
 === Provisioning a cluster
 
+
 [role="code_command hotspot", subs="quotes"]
 ----
 #Update the `cluster.yaml` file in the `start` directory.#
@@ -202,6 +203,7 @@ cluster.yaml
 
 ----
 include::finish/cluster.yaml[]
+----
 
 The `eksctl` CLI tool greatly simplifies the process of creating clusters on EKS. To create your cluster, use the `eksctl create cluster` command:
 
@@ -210,13 +212,13 @@ The `eksctl` CLI tool greatly simplifies the process of creating clusters on EKS
 ```
 eksctl create cluster -f cluster.yaml
 ```
-
+----
 [role=command]
 ----
 ```
 kubectl get nodes
 ```
-
+----
 [source, role="no_copy"]
 ----
 NAME                            STATUS    ROLES     AGE       VERSION
