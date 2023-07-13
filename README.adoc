@@ -312,11 +312,19 @@ Now that your container images are built, deploy them using a Kubernetes resourc
 A Kubernetes resource definition is a yaml file that contains a description of all your deployments, services, or any other resources that you want to deploy. All resources can also be deleted from the cluster by using the same yaml file that you used to deploy them. The `deployment.yaml` resource definition file is provided for you. If you are interested in learning more about the Kubernetes resource definition, check out the https://openliberty.io/guides/kubernetes-intro.html[Deploying microservices to Kubernetes^] guide. We can enable Semeru Cloud Compiler by turning `enable` to `true
  
 [role="code_command hotspot", subs="quotes"]
-[source, yaml, linenums, role='code_column']
 ----
 #Update the `deployment.yaml` file in the `start` directory.#
 `deployment.yaml`
-include::finish/deployment.yaml[]
+----
+
+Update the value of `applicationImage` in the `<aws_account_id>.dkr.ecr.<region>.amazonaws.com/<image_name>` format
+
+deployment.yaml
+
+[source, yaml, linenums, role='code_column']
+
+----
+include::finish/cluster.yaml[]
 ----
 
 Deploy the application by running the following command:
