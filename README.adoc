@@ -7,7 +7,7 @@
 // Contributors:
 //     IBM Corporation
 //
-:projectid: instantOn-aws
+:projectid: instantOn-draft
 :page-layout: guide-multipane
 :page-duration: 45 minutes
 :page-releasedate: 2023-07-06
@@ -41,7 +41,7 @@ Deploying microservices in Open Liberty InstantOn container to Amazon Web Servic
 
 == What you'll learn
 
-You will learn how to deploy two microservices in Open Liberty containers to a {kube} cluster on Amazon Elastic Container Service for Kubernetes (EKS). 
+You will learn how to deploy two microservices in Open Liberty containers to a Kubernetes cluster on Amazon Elastic Container Service for Kubernetes (EKS). 
 
 Amazon Web Services (AWS) offers a managed Kubernetes service called Amazon Elastic Container Service for {kube} (EKS). EKS simplifies the process of running Kubernetes on AWS without needing to install or maintain your Kubernetes control plane. It provides a hosted {kube} cluster where you can deploy your microservices. You will use EKS with Amazon Elastic Container Registry (ECR). Amazon ECR is a private registry that is used to store and distribute your container images. Note, because EKS is not free, there is a small cost that is associated with running this guide. See the official https://aws.amazon.com/eks/pricing/[Amazon EKS pricing^] documentation for more details.
 
@@ -73,8 +73,6 @@ Before you begin, the following additional tools need to be installed:
 // =================================================================================================
 // Getting Started
 // =================================================================================================
-
-== Getting Started
 
 [role=command]
 include::{common-includes}/gitclone.adoc[]
@@ -190,21 +188,19 @@ aws configure list
 
 The `eksctl` CLI tool greatly simplifies the process of creating clusters on EKS. To create your cluster, use the `eksctl create cluster` command:
 
-[role=command]
-```
-eksctl create cluster --name=guide-cluster --nodes=1 --node-type=t2.small
-```
+[role="code_command hotspot", subs="quotes"]
+----
+#Update the `cluster.yaml` file in the `start` directory.#
+`cluster.yaml`
+----
 
-Running this command creates a cluster that is called `guide-cluster` that uses a single `t2.small` Amazon Elastic Compute Cloud (EC2) instance as the worker node. The `t2.small` EC2 instance is not included in the AWS free tier. See the official https://aws.amazon.com/ec2/pricing/on-demand/[Amazon EC2 pricing^] documentation for more details. When the cluster is created, you see an output similar to the following:
+Verify region from your aws management console taskbar. For example region for Ohio is us-east-2 
 
-[source, role="no_copy"]
-```
-[✔]  EKS cluster "guide-cluster" in "us-east-2" region is ready
-```
-
-After your cluster is ready, EKS connects `kubectl` to the cluster. Verify that you're connected to the cluster by checking the cluster's nodes:
-
-[role=command]
+cluster.yaml
+[source, yaml, linenums, role='code_column']
+----
+include::finish/cluster.yaml[]
+----
 ```
 kubectl get nodes
 ```
@@ -216,57 +212,51 @@ ip.us-east-2.compute.internal   Ready     <none>    7m        v1.11.5
 ----
 
 // =================================================================================================
+// Installing the Operator
+// =================================================================================================
+
+== Installing the Operator
+
+INFO ON WHY DO WE NEED OPERATOR??
+
+Install the Open Liberty Operator:
+
+Set operator namespace and the namespace to watch:
+
+```
+OPERATOR_NAMESPACE=default
+WATCH_NAMESPACE='""'
+```
+
+WATCH_NAMESPACE='""'
+
+To watch all namespaces, install cluster-level role-based access:
+
+```
+curl -L https://raw.githubusercontent.com/OpenLiberty/open-liberty-operator/main/deploy/releases/1.2.0/kubectl/openliberty-app-rbac-watch-all.yaml \
+
+      | sed -e "s/OPEN_LIBERTY_OPERATOR_NAMESPACE/${OPERATOR_NAMESPACE}/" \
+
+      | kubectl apply -f -
+```
+
+Install the operator:
+
+```
+curl -L https://raw.githubusercontent.com/OpenLiberty/open-liberty-operator/main/deploy/releases/1.2.0/kubectl/openliberty-app-operator.yaml \
+
+      | sed -e "s/OPEN_LIBERTY_WATCH_NAMESPACE/${WATCH_NAMESPACE}/" \
+
+      | kubectl apply -n ${OPERATOR_NAMESPACE} -f -
+```
+
+// =================================================================================================
 // Deploying microservices to Amazon Elastic Container Service for Kubernetes (EKS)
 // =================================================================================================
 
 == Deploying microservices to Amazon Elastic Container Service for Kubernetes (EKS)
 
-In this section, you will learn how to deploy two microservices in Open Liberty containers to a {kube} cluster on EKS. You will build and containerize the `system` and `inventory` microservices, push them to a container registry, and then deploy them to your {kube} cluster. 
-
-// =================================================================================================
-// Building and containerizing the microservices
-// =================================================================================================
-
-=== Building and containerizing the microservices
-
-The first step of deploying to {kube} is to build your microservices and containerize them.
-
-The starting Java project, which you can find in the `start` directory, is a multi-module Maven project. It is made up of the `system` and `inventory` microservices. Each microservice resides in its own directory, `start/system` and `start/inventory`. Both of these directories contain a Dockerfile, which is necessary for building the Docker images. If you're unfamiliar with Dockerfiles, check out the https://openliberty.io/guides/containerize.html[Containerizing microservices^] guide.
-
-To build these microservices, navigate to the `start` directory and run the following command:
-
-[role=command]
-```
-mvn package
-```
-
-Next, run the `docker build` commands to build the container images for your application:
-[role='command']
-```
-docker build -t system:1.0-SNAPSHOT system/.
-docker build -t inventory:1.0-SNAPSHOT inventory/.
-```
-
-The `-t` flag in the `docker build` command allows the Docker image to be labeled (tagged) in the `name[:tag]` format. The tag for an image describes the specific image version. If the optional `[:tag]` tag is not specified, the `latest` tag is created by default.
-
-During the build, you see various Docker messages that describe what images are being downloaded and built. When the build finishes, run the following command to list all local Docker images:
-
-[role=command]
-```
-docker images
-```
-
-Verify that the `system:1.0-SNAPSHOT` and `inventory:1.0-SNAPSHOT` images are listed among them, for example:
-
-[source, role="no_copy"]
-----
-REPOSITORY                        TAG
-system                            1.0-SNAPSHOT
-inventory                         1.0-SNAPSHOT
-icr.io/appcafe/open-liberty       kernel-slim-java11-openj9-ubi       
-----
-
-If you don't see the `system:1.0-SNAPSHOT` and `inventory:1.0-SNAPSHOT` images, then check the Maven build log for any potential errors.
+In this section, you will learn how to deploy microservices in Open Liberty containers to a {kube} cluster on EKS. You will build and containerize the `system` and `inventory` microservices, push them to a container registry, and then deploy them to your {kube} cluster. 
 
 // =================================================================================================
 // Pushing the images to a docker registry
@@ -274,73 +264,26 @@ If you don't see the `system:1.0-SNAPSHOT` and `inventory:1.0-SNAPSHOT` images, 
 
 === Pushing the images to a container registry
 
-Pushing the images to a registry allows the cluster to create pods by using your container images. The registry that you are using is called Amazon Elastic Container Registry (ECR).
+Create a repository for the instanton container image, in the private Amazon ECR registry, and take note of the repositoryUri value. It should match the <aws_account_id>.dkr.ecr.<region>.amazonaws.com/getting-started-instanton pattern. For example: 1234567890.dkr.ecr.us-east-1.amazonaws.com/getting-started-instanton. You will need this value when you create the deployment.yaml file to deploy the InstantOn application.
 
-First, you must authenticate your Docker client to your ECR registry. Start by running the `get-login` command:
-[role=command]
 ```
-aws ecr get-login-password
+aws ecr create-repository --repository-name getting-started-instanton
 ```
 
-The `get-login` command returns a `[password_string]`; take a note of this `[password_string]`. Next, running the following will return the `[aws_account_id]` needed to authenticate your Docker client. 
+Next, authenticate to the registry using the following command so you can push or pull images using Podman:
 
-[role=command]
 ```
-aws sts get-caller-identity --output text --query "Account"
-```
-
-The `[aws_account_id]` is a unique 12-digit ID that is assigned to every AWS account. You will notice this ID in the output from various commands because AWS uses it to differentiate your resources from other accounts. 
-
-Replace the `[password_string]`, `[aws_account_id]` and the `[region]` your account is configured under in the following `docker login` command, that is used to authenticate your Docker client. 
-
-[role=command]
-```
-docker login -u AWS -p [password_string] https://[aws_account_id].dkr.ecr.[region].amazonaws.com
+aws ecr get-login-password | sudo podman login --username AWS --password-stdin <aws_account_id>.dkr.ecr.<region>.amazonaws.com
 ```
 
-Next, make a repository to store the `system` and `inventory` images:
-[role=command]
-```
-aws ecr create-repository --repository-name awsguide/system
-aws ecr create-repository --repository-name awsguide/inventory
-```
+After you are authenticated, you can tag and push the InstantOn image to the private ECR registry:
 
-You will see an output similar to the following:
 
-[source, role="no_copy"]
 ```
-{
-    "repository": {
-        "registryId": "[aws_account_id]",
-        "repositoryName": "awsguide/system",
-        "repositoryArn": "arn:aws:ecr:[region]:[aws_account_id]:repository/awsguide/system",
-        "createdAt": 1553111916.0,
-        "repositoryUri": "[aws_account_id].ecr.[region].amazonaws.com/awsguide/system"
-    }
-}
+sudo podman tag dev.local/getting-started-instanton <aws_account_id>.dkr.ecr.<region>.amazonaws.com/getting-started-instanton
+
+sudo podman push <aws_account_id>.dkr.ecr.<region>.amazonaws.com/getting-started-instanton
 ```
-
-Take note of the repository URI for both the `system` and `inventory` repositories, as you need them when you tag and push your images.
-
-// Tagging images
-Next, you need to tag your container images with the relevant data about your registry:
-
-[role=command]
-```
-docker tag system:1.0-SNAPSHOT [system-repository-uri]:1.0-SNAPSHOT
-docker tag inventory:1.0-SNAPSHOT [inventory-repository-uri]:1.0-SNAPSHOT
-```
-
-// Pushing images
-Finally, push your images to the registry:
-
-[role=command]
-```
-docker push [system-repository-uri]:1.0-SNAPSHOT
-docker push [inventory-repository-uri]:1.0-SNAPSHOT
-```
-
-When you tag and push your images, remember to substitute `[system-repository-uri]` and `[inventory-repository-uri]` with the appropriate URI for the system and inventory repositories. 
 
 // =================================================================================================
 // Deploying the microservices
@@ -352,25 +295,23 @@ Now that your container images are built, deploy them using a Kubernetes resourc
 
 A Kubernetes resource definition is a yaml file that contains a description of all your deployments, services, or any other resources that you want to deploy. All resources can also be deleted from the cluster by using the same yaml file that you used to deploy them. The `kubernetes.yaml` resource definition file is provided for you. If you are interested in learning more about the Kubernetes resource definition, check out the https://openliberty.io/guides/kubernetes-intro.html[Deploying microservices to Kubernetes^] guide.
 
+
+
 [role="code_command hotspot", subs="quotes"]
 ----
-#Update the `kubernetes.yaml` file in the `start` directory.#
-`kubernetes.yaml`
+#Update the `deployment.yaml` file in the `start` directory.#
+`deployment.yaml`
 ----
 
-kubernetes.yaml
+deployment.yaml
 [source, yaml, linenums, role='code_column']
 ----
-include::finish/kubernetes.yaml[]
+include::finish/deployment.yaml[]
 ----
 [role="edit_command_text"]
-The [hotspot=18 hotspot=39]`image` is the name and tag of the container image that you want to use for the container. Update the system [hotspot=18]`image` and the inventory [hotspot=39]`image` fields to point to your `system` and `inventory` repository URIs.
 
-
-Run the following commands to deploy the resources as defined in kubernetes.yaml:
-[role='command']
 ```
-kubectl apply -f kubernetes.yaml
+kubectl apply -f deployment.yaml
 ```
 
 When the apps are deployed, run the following command to check the status of your pods:
@@ -386,6 +327,18 @@ NAME                                    READY     STATUS    RESTARTS   AGE
 system-deployment-6bd97d9bf6-4ccds      1/1       Running   0          15s
 inventory-deployment-645767664f-nbtd9   1/1       Running   0          15s
 ----
+
+To check the semeru cloud compiler and instanton deployments, execute the following command:
+
+```
+kubectl get deployments
+```
+
+To view the application logs, execute the following command:
+
+```
+kubectl logs deployment/open-liberty-instanton
+```
 
 === Making requests to the microservices
 
@@ -497,79 +450,6 @@ Results:
 Tests run: 4, Failures: 0, Errors: 0, Skipped: 0
 ----
 
-== Deploying new version of system microservice
-
-Optionally, you might want to make changes to your microservice and learn how to redeploy the updated version of your microservice. In this section, you will bump the version of the `system` microservice to `2.0-SNAPSHOT` and redeploy the new version of the microservice.
-
-Use Maven to repackage your microservice:
-[role=command]
-```
-mvn package
-```
-
-Next, build the new version of the container image as `2.0-SNAPSHOT`:
-[role=command]
-```
-docker build -t system:2.0-SNAPSHOT system/.
-```
-
-Since you built a new image, it must be pushed to the `awsguide/system` repository of your container registry again.
-
-// Tagging images
-Tag your container image with the relevant data about your registry:
-
-[role=command]
-```
-docker tag system:2.0-SNAPSHOT [system-repository-uri]:2.0-SNAPSHOT
-```
-
-// Pushing images
-Push your image to the registry:
-
-[role=command]
-```
-docker push [system-repository-uri]:2.0-SNAPSHOT
-```
-
-Update the `system-deployment` deployment to use the new container image that you just pushed to the registry:
-
-[role=command]
-```
-kubectl set image deployment/system-deployment system-container=[system-repository-uri]:2.0-SNAPSHOT
-```
-
-Use the following command to find the name of the pod that is running the `system` microservice:
-
-[role=command]
-```
-kubectl get pods
-```
-
-[source, role="no_copy"]
-----
-NAME                                   READY     STATUS    RESTARTS   AGE
-inventory-deployment-6fd959cc4-rf2m2   1/1       Running   0          7m
-system-deployment-677b9f5d9c-nqzcf     1/1       Running   0          7m
-----
-
-Observe that in this case, the `system` microservice is running in the pod called `system-deployment-677b9f5d9c-nqzcf`. Substitute the name of your pod into the following command to see more details about the pod:
-
-[role=command]
-```
-kubectl get event --field-selector involvedObject.name=[pod-name]
-```
-
-View the events at the bottom of the command's output. Notice that the pod is using the new container image `system:2.0-SNAPSHOT`.
-
-[source, role="no_copy"]
-----
-LAST SEEN   TYPE     REASON      OBJECT                                   MESSAGE
-97s         Normal   Scheduled   pod/system-deployment-56b4b765d4-9jz5l   Successfully assigned default/system-deployment-56b4b765d4-9jz5l to ip-192-168-85-136.us-east-2.compute.internal
-97s         Normal   Pulling     pod/system-deployment-56b4b765d4-9jz5l   Pulling image "208872073932.dkr.ecr.us-east-2.amazonaws.com/awsguide/system:2.0-SNAPSHOT"
-95s         Normal   Pulled      pod/system-deployment-56b4b765d4-9jz5l   Successfully pulled image "208872073932.dkr.ecr.us-east-2.amazonaws.com/awsguide/system:2.0-SNAPSHOT" in 1.082459294s
-95s         Normal   Created     pod/system-deployment-56b4b765d4-9jz5l   Created container system-container
-95s         Normal   Started     pod/system-deployment-56b4b765d4-9jz5l   Started container system-container
-----
 
 // =================================================================================================
 // Tear Down
