@@ -188,7 +188,7 @@ aws configure list
 
 === Provisioning a cluster
 
-
+SOMETHING ABOUT THIS TOPIC
 
 [role="code_command hotspot", subs="quotes"]
 ----
@@ -212,11 +212,11 @@ The `eksctl` CLI tool greatly simplifies the process of creating clusters on EKS
 ```
 eksctl create cluster -f cluster.yaml
 ```
-After your cluster is ready, EKS connects kubectl to the cluster. Verify that you’re connected to the cluster by checking the cluster’s nodes:
+After your cluster is ready, EKS connects kubectl to the cluster. After about 15 minutes, the cluster should be provisioned and ready to use. Double check by running the following command to see the cluster  nodes::
 
 [role=command]
 ```
-kubectl get nodes
+kubectl get node -o wide
 ```
 [source, role="no_copy"]
 ----
@@ -236,15 +236,15 @@ Install the Open Liberty Operator:
 
 Set operator namespace and the namespace to watch:
 
+[role=command]
 ```
 OPERATOR_NAMESPACE=default
 WATCH_NAMESPACE='""'
 ```
 
-WATCH_NAMESPACE='""'
-
 To watch all namespaces, install cluster-level role-based access:
 
+[role=command]
 ```
 curl -L https://raw.githubusercontent.com/OpenLiberty/open-liberty-operator/main/deploy/releases/1.2.0/kubectl/openliberty-app-rbac-watch-all.yaml \
 
@@ -255,6 +255,7 @@ curl -L https://raw.githubusercontent.com/OpenLiberty/open-liberty-operator/main
 
 Install the operator:
 
+[role=command]
 ```
 curl -L https://raw.githubusercontent.com/OpenLiberty/open-liberty-operator/main/deploy/releases/1.2.0/kubectl/openliberty-app-operator.yaml \
 
