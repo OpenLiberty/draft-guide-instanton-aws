@@ -278,11 +278,11 @@ In this section, you will learn how to deploy microservices in Open Liberty cont
 
 === Pushing the images to a container registry
 
-Create a repository for the instanton container image, in the private Amazon ECR registry, and take note of the repositoryUri value. It should match the `<aws_account_id>.dkr.ecr.<region>.amazonaws.com/getting-started-instanton` pattern. For example: `1234567890.dkr.ecr.us-east-1.amazonaws.com/getting-started-instanton`. You will need this value when you create the `deployment.yaml` file to deploy the InstantOn application.
+Create a repository for the instanton container image, in the private Amazon ECR registry, and take note of the repositoryUri value. It should match the `<aws_account_id>.dkr.ecr.<region>.amazonaws.com/instantOn` pattern. For example: `1234567890.dkr.ecr.us-east-1.amazonaws.com/instantOn`. You will need this value when you create the `deployment.yaml` file to deploy the InstantOn application.
 
 [role=command]
 ```
-aws ecr create-repository --repository-name getting-started-instanton
+aws ecr create-repository --repository-name instantOn
 ```
 
 Next, authenticate to the registry using the following command so you can push or pull images using Podman:
@@ -296,9 +296,9 @@ After you are authenticated, you can tag and push the InstantOn image to the pri
 
 [role=command]
 ```
-sudo podman tag dev.local/liberty-app-instanton <aws_account_id>.dkr.ecr.<region>.amazonaws.com/getting-started-instanton
+sudo podman tag dev.local/liberty-app-instanton <aws_account_id>.dkr.ecr.<region>.amazonaws.com/instantOn
 
-sudo podman push <aws_account_id>.dkr.ecr.<region>.amazonaws.com/getting-started-instanton
+sudo podman push <aws_account_id>.dkr.ecr.<region>.amazonaws.com/instantOn
 ```
 
 // =================================================================================================
@@ -490,7 +490,6 @@ Delete the ECR repositories used to store the `system` and `inventory` images:
 [role=command]
 ```
 aws ecr delete-repository --repository-name awsguide/system --force
-aws ecr delete-repository --repository-name awsguide/inventory --force
 ```
 
 Remove your EKS cluster:
