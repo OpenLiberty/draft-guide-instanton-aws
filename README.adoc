@@ -296,7 +296,7 @@ After you are authenticated, you can tag and push the InstantOn image to the pri
 
 [role=command]
 ```
-sudo podman tag dev.local/getting-started-instanton <aws_account_id>.dkr.ecr.<region>.amazonaws.com/getting-started-instanton
+sudo podman tag dev.local/liberty-app-instanton <aws_account_id>.dkr.ecr.<region>.amazonaws.com/getting-started-instanton
 
 sudo podman push <aws_account_id>.dkr.ecr.<region>.amazonaws.com/getting-started-instanton
 ```
