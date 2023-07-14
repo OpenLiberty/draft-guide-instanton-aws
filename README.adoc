@@ -95,7 +95,7 @@ The following image template example uses the `kernel-slim-java17-openj9-ubi` ta
 ----
 
 // File 0
-Dockerfile
+system/Dockerfile
 [source, text, linenums, role="code_column"]
 ----
 include::finish/system/Dockerfile[]
@@ -200,6 +200,7 @@ The `eksctl` CLI tool greatly simplifies the process of creating clusters on EKS
 ```
 eksctl create cluster -f cluster.yaml
 ```
+
 After your cluster is ready, EKS connects kubectl to the cluster. After about 15 minutes, the cluster should be provisioned and ready to use. Double check by running the following command to see the cluster  nodes::
 
 [role=command]
@@ -266,27 +267,47 @@ In this section, you will learn how to deploy microservices in Open Liberty cont
 
 === Pushing the images to a container registry
 
-Create a repository for the instanton container image, in the private Amazon ECR registry, and take note of the repositoryUri value. It should match the `<aws_account_id>.dkr.ecr.<region>.amazonaws.com/instantOn` pattern. For example: `1234567890.dkr.ecr.us-east-1.amazonaws.com/instantOn`. You will need this value when you create the `deployment.yaml` file to deploy the InstantOn application.
+Pushing the images to a registry allows the cluster to create pods by using your container images. The registry that you are using is called Amazon Elastic Container Registry (ECR).
 
-[role=command]
-```
-aws ecr create-repository --repository-name instantOn
-```
+Authenticate to the registry using the following command so you can push or pull images using Podman:
 
-Next, authenticate to the registry using the following command so you can push or pull images using Podman:
+Start by running the `get-login` command. The `get-login` command returns a `<password_string>`. The `password-stdin` flag acts provides the password returned by `get-login`. Replace the `<aws_account_id>` and the `<region>` your account is configured under in the following `sudo podman` command, that is used to authenticate your Podman client.
 
 [role=command]
 ```
 aws ecr get-login-password | sudo podman login --username AWS --password-stdin <aws_account_id>.dkr.ecr.<region>.amazonaws.com
 ```
 
-After you are authenticated, you can tag and push the InstantOn image to the private ECR registry:
+After you are authenticated, create a repository for the instanton container image, in the private Amazon ECR registry, and take note of the repositoryUri value. It should match the `<aws_account_id>.dkr.ecr.<region>.amazonaws.com/awsguide/system/instantOn` pattern. For example: `1234567890.dkr.ecr.us-east-1.amazonaws.com/instantOn`. You will need this value when you create the `deployment.yaml` file to deploy the InstantOn application.
+
+Next, make a repository to store the `system` images:
+[role=command]
+```
+aws ecr create-repository --repository-name awsguide/system/instantOn
+```
+
+You will see an output similar to the following:
+
+[source, role="no_copy"]
+```
+{
+    "repository": {
+        "registryId": "<aws_account_id>",
+        "repositoryName": "awsguide/system/instantOn",
+        "repositoryArn": "arn:aws:ecr:<region>:<aws_account_id>:repository/awsguide/system/instantOn",
+        "createdAt": 1553111916.0,
+        "repositoryUri": "<aws_account_id>.ecr.<region>.amazonaws.com/awsguide/system/instantOn"
+    }
+}
+```
+
+Now, you can tag and push the InstantOn image to the private ECR registry:
 
 [role=command]
 ```
-sudo podman tag dev.local/liberty-app-instanton <aws_account_id>.dkr.ecr.<region>.amazonaws.com/instantOn
+sudo podman tag dev.local/liberty-app-instanton <aws_account_id>.dkr.ecr.<region>.amazonaws.com/awsguide/system/instantOn
 
-sudo podman push <aws_account_id>.dkr.ecr.<region>.amazonaws.com/instantOn
+sudo podman push <aws_account_id>.dkr.ecr.<region>.amazonaws.com/awsguide/system/instantOn
 ```
 
 // =================================================================================================
