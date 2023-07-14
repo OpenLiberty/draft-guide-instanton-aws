@@ -91,11 +91,11 @@ The following image template example uses the `kernel-slim-java17-openj9-ubi` ta
 [role="code_command hotspot file=0",subs="quotes"]
 ----
 #Create the `Dockerfile` in the `start` directory.#
-`Dockerfile`
+`system/Dockerfile`
 ----
 
 // File 0
-system/Dockerfile
+Dockerfile
 [source, text, linenums, role="code_column"]
 ----
 include::finish/system/Dockerfile[]
