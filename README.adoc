@@ -88,9 +88,20 @@ You can use the `checkpoint.sh` script to perform the application checkpoint by 
 
 The following image template example uses the `kernel-slim-java17-openj9-ubi` tag to build an image that uses the latest Open Liberty release with the IBM Semeru distribution of Java 17. This example uses the `afterAppStart` checkpoint option.
 
-[source,dockerfile]
-.Dockerfile
+[role="code_command hotspot file=0",subs="quotes"]
 ----
+#Create the `Dockerfile` in the `start` directory.#
+`Dockerfile`
+----
+
+// File 0
+Dockerfile
+[source, text, linenums, role="code_column"]
+----
+include::finish/system/Dockerfile[]
+----
+
+/**************************************************
 FROM icr.io/appcafe/open-liberty:kernel-slim-java17-openj9-ubi
 
 # Add a Liberty server configuration that includes all necessary features
@@ -113,11 +124,11 @@ RUN configure.sh
 # The application can use beforeAppStart or afterAppStart to do the checkpoint.
 # The default is beforeAppStart when not specified
 RUN checkpoint.sh afterAppStart
-----
+/**************************************************
 
 Use the following Podman command to build the InstantOn application container image. To grant the necessary Linux capabilities to the container image build, this command must be run either as the `root` user or by using the `sudo` utility.
 
-[source,sh]
+[role=command]
 ----
 podman build \
    -t dev.local/liberty-app-instanton \
@@ -133,7 +144,7 @@ Running an InstantOn application image locally
 
 If a host system is running the Linux kernel 5.9 or greater with the X86-64/AMD64 processor, you can run an InstantOn application image by using Podman or Docker locally. The following command runs the `liberty-app-instanton` InstantOn application image with Podman:
 
-[source,sh]
+[role=command]
 ----
 podman run \
   --rm \
@@ -324,7 +335,7 @@ deployment.yaml
 [source, yaml, linenums, role='code_column']
 
 ----
-include::finish/cluster.yaml[]
+include::finish/deployment.yaml[]
 ----
 
 Deploy the application by running the following command:
