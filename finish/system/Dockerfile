@@ -1,22 +1,22 @@
-FROM icr.io/appcafe/open-liberty:kernel-slim-java11-openj9-ubi
+FROM icr.io/appcafe/open-liberty:kernel-slim-java17-openj9-ubi
 
-ARG VERSION=1.0
-ARG REVISION=SNAPSHOT
-LABEL \
-  org.opencontainers.image.authors="Your Name" \
-  org.opencontainers.image.vendor="Open Liberty" \
-  org.opencontainers.image.url="local" \
-  org.opencontainers.image.source="https://github.com/OpenLiberty/guide-cloud-aws" \
-  org.opencontainers.image.version="$VERSION" \
-  org.opencontainers.image.revision="$REVISION" \
-  vendor="Open Liberty" \
-  name="system" \
-  version="$VERSION-$REVISION" \
-  summary="The system microservice from the AWS guide" \
-  description="This image contains the system microservice running with the Open Liberty runtime."
+# Add a Liberty server configuration that includes all necessary features
+COPY --chown=1001:0  server.xml /config/
 
-COPY --chown=1001:0 src/main/liberty/config /config/
+# This script adds the requested XML snippets to enable Liberty features and grow the image to be fit-for-purpose.
+# This option is available only in the 'kernel-slim' image type. The 'full' and 'beta' tags already include all features.
 RUN features.sh
-COPY --chown=1001:0 target/guide-cloud-aws-system.war /config/apps
 
-RUN configure.sh 
+# Add interim fixes (optional)
+COPY --chown=1001:0  interim-fixes /opt/ol/fixes/
+
+# Add an application
+COPY --chown=1001:0  Sample1.war /config/dropins/
+
+# This script adds the requested server configuration, applies any interim fixes, and populates caches to optimize the runtime.
+RUN configure.sh
+
+# This script performs an InstantOn checkpoint of the application.
+# The application can use beforeAppStart or afterAppStart to do the checkpoint.
+# The default is beforeAppStart when not specified
+RUN checkpoint.sh afterAppStart
