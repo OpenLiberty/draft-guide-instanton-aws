@@ -444,7 +444,7 @@ The first URL returns system properties and the name of the pod in an HTTP heade
 pom.xml
 [source, xml, linenums, role='code_column']
 ----
-include::finish/inventory/pom.xml[]
+include::finish/system/pom.xml[]
 ----
 
 A few tests are included for you to test the basic functionality of the microservices. If a test failure occurs, then you might have introduced a bug into the code. To run the tests, wait for all pods to be in the ready state before you proceed further. The default properties defined in the [hotspot]`pom.xml` file are:
