@@ -271,7 +271,7 @@ Pushing the images to a registry allows the cluster to create pods by using your
 
 Authenticate to the registry using the following command so you can push or pull images using Podman:
 
-Start by running the `get-login` command. The `get-login` command returns a `<password_string>`. The `password-stdin` flag acts provides the password returned by `get-login`. Replace the `<aws_account_id>` and the `<region>` your account is configured under in the following `sudo podman` command, that is used to authenticate your Podman client.
+Start by running the `get-login` command. The `get-login` command returns the <password_string>. The `password-stdin` flag provides the password returned by `get-login`. Replace the `<aws_account_id>` and the `<region>` your account is configured under in the following `sudo podman` command, that is used to authenticate your Podman client.
 
 [role=command]
 ```
@@ -280,10 +280,12 @@ aws ecr get-login-password | sudo podman login --username AWS --password-stdin <
 
 After you are authenticated, create a repository for the instanton container image, in the private Amazon ECR registry, and take note of the repositoryUri value. It should match the `<aws_account_id>.dkr.ecr.<region>.amazonaws.com/awsguide/system/instantOn` pattern. For example: `1234567890.dkr.ecr.us-east-1.amazonaws.com/instantOn`. You will need this value when you create the `deployment.yaml` file to deploy the InstantOn application.
 
-Next, make a repository to store the `system` images:
+Next, make a repository to store the `system` and `inventory` images:
 [role=command]
 ```
 aws ecr create-repository --repository-name awsguide/system/instantOn
+
+aws ecr create-repository --repository-name awsguide/inventory/instantOn
 ```
 
 You will see an output similar to the following:
@@ -301,13 +303,24 @@ You will see an output similar to the following:
 }
 ```
 
-Now, you can tag and push the InstantOn image to the private ECR registry:
+// Tagging images
+Next, you need to tag your container images with the relevant data about your registry:
 
 [role=command]
 ```
 sudo podman tag dev.local/liberty-app-instanton <aws_account_id>.dkr.ecr.<region>.amazonaws.com/awsguide/system/instantOn
 
+sudo podman tag dev.local/liberty-app-instanton <aws_account_id>.dkr.ecr.<region>.amazonaws.com/awsguide/inventory/instantOn
+```
+
+// Pushing images
+Finally, push your images to the registry:
+
+[role=command]
+```
 sudo podman push <aws_account_id>.dkr.ecr.<region>.amazonaws.com/awsguide/system/instantOn
+
+sudo podman push <aws_account_id>.dkr.ecr.<region>.amazonaws.com/awsguide/inventory/instantOn
 ```
 
 // =================================================================================================
@@ -354,6 +367,7 @@ If all the pods are healthy and running, you see an output similar to the follow
 ----
 NAME                                    READY     STATUS    RESTARTS   AGE
 system-deployment-6bd97d9bf6-4ccds      1/1       Running   0          15s
+inventory-deployment-645767664f-nbtd9   1/1       Running   0          15s
 ----
 
 To check the semeru cloud compiler and instanton deployments, execute the following command:
@@ -398,12 +412,12 @@ You will see an output similar to the following:
 
 Copy the value of the `GroupId` which description is "Allow managed and unmanaged nodes to communicate with each other (all ports)". In this example output, the value is `sg-04a0c50049c10ae54`.
 
-Then, add the following rules to the security group to allow incoming traffic through ports `31000` and `32000`. Don't forget to substitute `[security-group-id]` for the `GroupId` in the output of the previous command.
+Then, add the following rules to the security group to allow incoming traffic through ports `31000` and `32000`. Don't forget to substitute `<security-group-id>` for the `GroupId` in the output of the previous command.
 
 [role=command]
 ```
-aws ec2 authorize-security-group-ingress --protocol tcp --port 31000 --group-id [security-group-id] --cidr 0.0.0.0/0
-aws ec2 authorize-security-group-ingress --protocol tcp --port 32000 --group-id [security-group-id] --cidr 0.0.0.0/0
+aws ec2 authorize-security-group-ingress --protocol tcp --port 31000 --group-id <security-group-id> --cidr 0.0.0.0/0
+aws ec2 authorize-security-group-ingress --protocol tcp --port 32000 --group-id <security-group-id> --cidr 0.0.0.0/0
 ```
 
 After you finish adding the inbound rules to the security group, you might need to wait a few minutes before you try to access the `system` and `inventory` microservices.
