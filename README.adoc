@@ -421,9 +421,9 @@ kubectl get nodes -o wide
 
 Then, `curl` or visit the following URLs to access your microservices, substituting the appropriate hostname:
 
-* `{system-api}`
+* `http://[hostname]:31000/system/properties`
 
-The first URL returns system properties and the name of the pod in an HTTP header called `X-Pod-Name`. To view the header, you can use the `-I` option in the `curl` when you make a request to `{system-api}`. 
+This URL returns system properties and the name of the pod in an HTTP header called `X-Pod-Name`. To view the header, you can use the `-I` option in the `curl` when you make a request to `http://[hostname]:31000/system/properties`. 
 
 // =================================================================================================
 // Testing microservices that are running on AWS EKS
