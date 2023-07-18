@@ -43,7 +43,7 @@ Deploying microservices in Open Liberty InstantOn container to Amazon Web Servic
 
 You will learn how to deploy two microservices in Open Liberty containers to a Kubernetes cluster on Amazon Elastic Container Service for Kubernetes (EKS). 
 
-Amazon Web Services (AWS) offers a managed Kubernetes service called Amazon Elastic Container Service for {kube} (EKS). EKS simplifies the process of running Kubernetes on AWS without needing to install or maintain your Kubernetes control plane. It provides a hosted {kube} cluster where you can deploy your microservices. You will use EKS with Amazon Elastic Container Registry (ECR). Amazon ECR is a private registry that is used to store and distribute your container images. Note, because EKS is not free, there is a small cost that is associated with running this guide. See the official https://aws.amazon.com/eks/pricing/[Amazon EKS pricing^] documentation for more details.
+Amazon Web Services (AWS) offers a managed Kubernetes service called Amazon Elastic Container Service for kubernetes (EKS). EKS simplifies the process of running Kubernetes on AWS without needing to install or maintain your Kubernetes control plane. It provides a hosted kubernetes cluster where you can deploy your microservices. You will use EKS with Amazon Elastic Container Registry (ECR). Amazon ECR is a private registry that is used to store and distribute your container images. Note, because EKS is not free, there is a small cost that is associated with running this guide. See the official https://aws.amazon.com/eks/pricing/[Amazon EKS pricing^] documentation for more details.
 
 Open Liberty InstantOn provides fast startup times for MicroProfile and Jakarta EE applications. With InstantOn, your applications can start in milliseconds, without compromising on throughput, memory, development-production parity, or Java language features.
 
@@ -279,19 +279,19 @@ Pushing the images to a registry allows the cluster to create pods by using your
 
 Authenticate to the registry using the following command so you can push or pull images using Podman:
 
-Start by running the `get-login` command. The `get-login` command returns the <password_string>. The `password-stdin` flag provides the password returned by `get-login`. Replace the `<aws_account_id>` and the `<region>` your account is configured under in the following `sudo podman` command, that is used to authenticate your Podman client.
+Start by running the `get-login` command. The `get-login` command returns the [password_string]. The `password-stdin` flag provides the password returned by `get-login`. Replace the `[aws_account_id]` and the `[region]` your account is configured under in the following `sudo podman` command, that is used to authenticate your Podman client.
 
 [role=command]
 ```
-aws ecr get-login-password | sudo podman login --username AWS --password-stdin <aws_account_id>.dkr.ecr.<region>.amazonaws.com
+aws ecr get-login-password | sudo podman login --username AWS --password-stdin [aws_account_id].dkr.ecr.[region].amazonaws.com
 ```
 
-After you are authenticated, create a repository for the instanton container image, in the private Amazon ECR registry, and take note of the repositoryUri value. It should match the `<aws_account_id>.dkr.ecr.<region>.amazonaws.com//instantOn/instantOn` pattern. For example: `1234567890.dkr.ecr.us-east-1.amazonaws.com/instantOn`. You will need this value when you create the `deployment.yaml` file to deploy the InstantOn application.
+After you are authenticated, create a repository for the instanton container image, in the private Amazon ECR registry, and take note of the repositoryUri value. It should match the `[aws_account_id].dkr.ecr.[region].amazonaws.com//instantOn/instantOn` pattern. For example: `1234567890.dkr.ecr.us-east-1.amazonaws.com/instantOn`. You will need this value when you create the `kubernetes.yaml` file to deploy the InstantOn application.
 
 Next, make a repository to store the `system` image:
 [role=command]
 ```
-aws ecr create-repository --repository-name awsguide/system
+aws ecr create-repository --repository-name instantonaws/system
 ```
 
 You will see an output similar to the following:
@@ -300,11 +300,11 @@ You will see an output similar to the following:
 ```
 {
     "repository": {
-        "registryId": "<aws_account_id>",
-        "repositoryName": "awsguide/system",
-        "repositoryArn": "arn:aws:ecr:<region>:<aws_account_id>:repository/awsguide/system",
+        "registryId": "[aws_account_id]",
+        "repositoryName": "instantonaws/system",
+        "repositoryArn": "arn:aws:ecr:[region]:[aws_account_id]:repository/instantonaws/system",
         "createdAt": 1553111916.0,
-        "repositoryUri": "<aws_account_id>.ecr.<region>.amazonaws.com/awsguide/system"
+        "repositoryUri": "[aws_account_id].ecr.[region].amazonaws.com/instantonaws/system"
     }
 }
 ```
@@ -314,7 +314,7 @@ Next, you need to tag your container image with the relevant data about your reg
 
 [role=command]
 ```
-sudo podman tag dev.local/system:1.0-SNAPSHOT <aws_account_id>.dkr.ecr.<region>.amazonaws.com/awsguide/system:1.0-SNAPSHOT
+sudo podman tag dev.local/system:1.0-SNAPSHOT [system-repository-uri]:1.0-SNAPSHOT
 ```
 
 // Pushing images
@@ -322,7 +322,7 @@ Finally, push your image to the registry:
 
 [role=command]
 ```
-sudo podman push <aws_account_id>.dkr.ecr.<region>.amazonaws.com/awsguide/system:1.0-SNAPSHOT
+sudo podman push [system-repository-uri]:1.0-SNAPSHOT
 ```
 
 // =================================================================================================
@@ -333,28 +333,28 @@ sudo podman push <aws_account_id>.dkr.ecr.<region>.amazonaws.com/awsguide/system
 
 Now that your container images are built, deploy them using a Kubernetes resource definition.
 
-A Kubernetes resource definition is a yaml file that contains a description of all your deployments, services, or any other resources that you want to deploy. All resources can also be deleted from the cluster by using the same yaml file that you used to deploy them. The `deployment.yaml` resource definition file is provided for you. If you are interested in learning more about the Kubernetes resource definition, check out the https://openliberty.io/guides/kubernetes-intro.html[Deploying microservices to Kubernetes^] guide. We can enable Semeru Cloud Compiler by turning `enable` to `true
+A Kubernetes resource definition is a yaml file that contains a description of all your deployments, services, or any other resources that you want to deploy. All resources can also be deleted from the cluster by using the same yaml file that you used to deploy them. The `kubernetes.yaml` resource definition file is provided for you. If you are interested in learning more about the Kubernetes resource definition, check out the https://openliberty.io/guides/kubernetes-intro.html[Deploying microservices to Kubernetes^] guide. We can enable Semeru Cloud Compiler by turning `enable` to `true
  
 [role="code_command hotspot", subs="quotes"]
 ----
-#Update the `deployment.yaml` file in the `start` directory.#
-`deployment.yaml`
+#Update the `kubernetes.yaml` file in the `start` directory.#
+`kubernetes.yaml`
 ----
 
-Update the value of `applicationImage` in the `<aws_account_id>.dkr.ecr.<region>.amazonaws.com/<image_name>` format
+Update the value of `image` to `[system-repository-uri]`
 
-deployment.yaml
+kubernetes.yaml
 
 [source, yaml, linenums, role='code_column']
 
 ----
-include::finish/deployment.yaml[]
+include::finish/kubernetes.yaml[]
 ----
 
 Deploy the application by running the following command:
 [role=command]
 ```
-kubectl apply -f deployment.yaml
+kubectl apply -f kubernetes.yaml
 ```
 
 When the apps are deployed, run the following command to check the status of your pods:
@@ -413,16 +413,16 @@ You will see an output similar to the following:
 
 Copy the value of the `GroupId` which description is "Allow managed and unmanaged nodes to communicate with each other (all ports)". In this example output, the value is `sg-04a0c50049c10ae54`.
 
-Then, add the following rules to the security group to allow incoming traffic through port `31000`. Don't forget to substitute `<security-group-id>` for the `GroupId` in the output of the previous command.
+Then, add the following rules to the security group to allow incoming traffic through port `31000`. Don't forget to substitute `[security-group-id]` for the `GroupId` in the output of the previous command.
 
 [role=command]
 ```
-aws ec2 authorize-security-group-ingress --protocol tcp --port 31000 --group-id <security-group-id> --cidr 0.0.0.0/0
+aws ec2 authorize-security-group-ingress --protocol tcp --port 31000 --group-id [security-group-id] --cidr 0.0.0.0/0
 ```
 
 After you finish adding the inbound rules to the security group, you might need to wait a few minutes before you try to access the `system` microservice.
 
-Take note of the `EXTERNAL-IP` in the output of the following command. It is the hostname you will later substitute into `<hostname>`: 
+Take note of the `EXTERNAL-IP` in the output of the following command. It is the hostname you will later substitute into `[hostname]`: 
 [role=command]
 ```
 kubectl get nodes -o wide
@@ -488,16 +488,16 @@ Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
 
 It is important to clean up your resources when you are finished with the guide so that you do not incur additional charges for ongoing service.
 
-When you no longer need your deployed microservices, you can delete all {kube} resources by running the `kubectl delete` command:
+When you no longer need your deployed microservices, you can delete all kubernetes resources by running the `kubectl delete` command:
 [role='command']
 ```
-kubectl delete -f deployment.yaml
+kubectl delete -f kubernetes.yaml
 ```
 
 Delete the ECR repositories used to store the `system` image:
 [role=command]
 ```
-aws ecr delete-repository --repository-name awsguide/system --force
+aws ecr delete-repository --repository-name instantonaws/system --force
 ```
 
 Remove your EKS cluster:
@@ -513,7 +513,7 @@ eksctl delete cluster --name guide-cluster
 
 == Great work! You're done!
 
-You just deployed two microservices running in Open Liberty to AWS EKS. You also learned how to use the `kubectl` command to deploy your microservices on a {kube} cluster.
+You just deployed two microservices running in Open Liberty to AWS EKS. You also learned how to use the `kubectl` command to deploy your microservices on a kubernetes cluster.
 
 // Multipane
 include::{common-includes}/attribution.adoc[subs="attributes"]
