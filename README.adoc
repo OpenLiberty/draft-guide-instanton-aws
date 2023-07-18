@@ -439,7 +439,7 @@ This URL returns system properties and the name of the pod in an HTTP header cal
 
 == Testing microservices that are running on AWS EKS
 
-//File 0
+//file 0
 pom.xml
 [source, xml, linenums, role='code_column']
 ----
