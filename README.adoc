@@ -441,7 +441,7 @@ A few tests are included for you to test the basic functionality of the microser
 [cols="15, 100", options="header"]
 |===
 | *Property*                                | *Description*
-| [hotspot=cluster file=1]`cluster.ip`                         | IP or hostname for your cluster.
+| [hotspot=cluster ]`cluster.ip`                         | IP or hostname for your cluster.
 | [hotspot=system-service ]`system.kube.service`         | Name of the Kubernetes Service wrapping the `system` pods, `system-service` by default.
 | [hotspot=system-node-port file=0]`system.node.port`          | The NodePort of the Kubernetes Service `system-service`, 31000 by default.
 |===
