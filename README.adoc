@@ -151,7 +151,7 @@ podman run \
 
 You can check the start-up time from logs and notice the massive change.
 
-More detailed information on InstantOn application image can be found on https://openliberty.io/docs/latest/instanton.html#run.
+More detailed information on InstantOn application image can be found on https://openliberty.io/docs/latest/instanton.html.
 
 // =================================================================================================
 // Creating a Kubernetes cluster on EKS
