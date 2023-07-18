@@ -87,7 +87,7 @@ You can use the `checkpoint.sh` script to perform the application checkpoint by 
 
 The following image template example uses the `kernel-slim-java17-openj9-ubi` tag to build an image that uses the latest Open Liberty release with the IBM Semeru distribution of Java 17. This example uses the `afterAppStart` checkpoint option.
 
-[role="code_command hotspot file=1",subs="quotes"]
+[role="code_command hotspot file=0",subs="quotes"]
 ----
 #Create the `Dockerfile` in the `start` directory.#
 `system/Dockerfile`
@@ -431,8 +431,9 @@ This URL returns system properties and the name of the pod in an HTTP header cal
 
 == Testing microservices that are running on AWS EKS
 
-pom.xml
-[source, xml, linenums, role='code_column']
+// file 1
+system/pom.xml
+[source, XML, linenums, role='code_column']
 ----
 include::finish/system/pom.xml[]
 ----
@@ -443,8 +444,8 @@ A few tests are included for you to test the basic functionality of the microser
 |===
 | *Property*                                | *Description*
 | [hotspot=cluster file=1]`cluster.ip`                         | IP or hostname for your cluster.
-| [hotspot=system-service file=0]`system.kube.service`         | Name of the Kubernetes Service wrapping the `system` pods, `system-service` by default.
-| [hotspot=system-node-port file=0]`system.node.port`          | The NodePort of the Kubernetes Service `system-service`, 31000 by default.
+| [hotspot=system-service file=1]`system.kube.service`         | Name of the Kubernetes Service wrapping the `system` pods, `system-service` by default.
+| [hotspot=system-node-port file=1]`system.node.port`          | The NodePort of the Kubernetes Service `system-service`, 31000 by default.
 |===
 
 Use the following command to run the integration tests against your cluster. Substitute `[hostname]` with the appropriate value:
