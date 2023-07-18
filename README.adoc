@@ -100,8 +100,6 @@ Dockerfile
 include::finish/system/Dockerfile[]
 ----
 
-
-
 Use the following Podman command to build the InstantOn application container image. To grant the necessary Linux capabilities to the container image build, this command must be run either as the `root` user or by using the `sudo` utility.
 
 [role=command]
