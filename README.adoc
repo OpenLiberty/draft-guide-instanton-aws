@@ -55,9 +55,11 @@ The microservice you will deploy are called `system`. The `system` microservice 
 
 == Additional prerequisites
 
+You must run this guide in a Linux environment.
+
 Before you begin, the following additional tools need to be installed:
 
-* *Linux:* You will need Linux Operating System with a kernel version of 5.9 or greater with the X86-64/AMD64 processor to use InstantOn.
+* *Linux:* You must use kernel version of 5.9 or greater with the X86-64/AMD64 processor.
 
 * *Podman:* You need containerization software for building containers. Kubernetes supports various container types, but you will use the latest available version of Podman in this guide. For installation instructions, refer to the official https://podman.io/docs/installation documentation.
 
@@ -105,18 +107,36 @@ Use the following Podman command to build the InstantOn application container im
 [role=command]
 ----
 podman build \
-   -t dev.local/liberty-app-instanton \
+   -t dev.local/system:1.0-SNAPSHOT \
    --cap-add=CHECKPOINT_RESTORE \
    --cap-add=SYS_PTRACE\
    --cap-add=SETPCAP \
-   --security-opt seccomp=unconfined .
+   --security-opt seccomp=unconfined system/.
 ----
 
 The three `--cap-add` options grant the three Linux capabilities that CRIU requires to perform the application process checkpoint during the container image build. The `--security-opt` option grants access to all Linux system calls to the container image build.
 
+When the build finishes, run the following command to list all local images:
+
+[role=command]
+```
+podman images
+```
+
+Verify that the `system:1.0-SNAPSHOT` image is listed among them, for example:
+
+[source, role="no_copy"]
+----
+REPOSITORY                        TAG
+system                            1.0-SNAPSHOT
+icr.io/appcafe/open-liberty       kernel-slim-java11-openj9-ubi       
+----
+
+If you don't see the `system:1.0-SNAPSHOT` image, then check the Maven build log for any potential errors.
+
 Running an InstantOn application image locally
 
-If a host system is running the Linux kernel 5.9 or greater with the X86-64/AMD64 processor, you can run an InstantOn application image by using Podman or Docker locally. The following command runs the `liberty-app-instanton` InstantOn application image with Podman:
+If a host system is running the Linux kernel 5.9 or greater with the X86-64/AMD64 processor, you can run an InstantOn application image by using Podman or Docker locally. The following command runs the `system` InstantOn application image with Podman:
 
 [role=command]
 ----
@@ -126,7 +146,7 @@ podman run \
   --cap-add=SETPCAP \
   --security-opt seccomp=unconfined \
   -p 9080:9080 \
-  liberty-app-instanton
+  system:1.0-SNAPSHOT
 ----
 
 You can check the start-up time from logs and notice the massive change.
@@ -280,7 +300,7 @@ After you are authenticated, create a repository for the instanton container ima
 Next, make a repository to store the `system` image:
 [role=command]
 ```
-aws ecr create-repository --repository-name awsguide/system/instantOn
+aws ecr create-repository --repository-name awsguide/system
 ```
 
 You will see an output similar to the following:
@@ -290,10 +310,10 @@ You will see an output similar to the following:
 {
     "repository": {
         "registryId": "<aws_account_id>",
-        "repositoryName": "awsguide/system/instantOn",
-        "repositoryArn": "arn:aws:ecr:<region>:<aws_account_id>:repository/awsguide/system/instantOn",
+        "repositoryName": "awsguide/system",
+        "repositoryArn": "arn:aws:ecr:<region>:<aws_account_id>:repository/awsguide/system",
         "createdAt": 1553111916.0,
-        "repositoryUri": "<aws_account_id>.ecr.<region>.amazonaws.com/awsguide/system/instantOn"
+        "repositoryUri": "<aws_account_id>.ecr.<region>.amazonaws.com/awsguide/system"
     }
 }
 ```
@@ -303,7 +323,7 @@ Next, you need to tag your container image with the relevant data about your reg
 
 [role=command]
 ```
-sudo podman tag dev.local/liberty-app-instanton <aws_account_id>.dkr.ecr.<region>.amazonaws.com/awsguide/system/instantOn
+sudo podman tag dev.local/system:1.0-SNAPSHOT <aws_account_id>.dkr.ecr.<region>.amazonaws.com/awsguide/system:1.0-SNAPSHOT
 ```
 
 // Pushing images
@@ -311,7 +331,7 @@ Finally, push your image to the registry:
 
 [role=command]
 ```
-sudo podman push <aws_account_id>.dkr.ecr.<region>.amazonaws.com/awsguide/system/instantOn
+sudo podman push <aws_account_id>.dkr.ecr.<region>.amazonaws.com/awsguide/system:1.0-SNAPSHOT
 ```
 
 // =================================================================================================
@@ -429,7 +449,7 @@ This URL returns system properties and the name of the pod in an HTTP header cal
 
 == Testing microservices that are running on AWS EKS
 
-//File 1
+//File 0
 pom.xml
 [source, xml, linenums, role='code_column']
 ----
@@ -441,8 +461,8 @@ A few tests are included for you to test the basic functionality of the microser
 [cols="15, 100", options="header"]
 |===
 | *Property*                                | *Description*
-| [hotspot=cluster ]`cluster.ip`                         | IP or hostname for your cluster.
-| [hotspot=system-service ]`system.kube.service`         | Name of the Kubernetes Service wrapping the `system` pods, `system-service` by default.
+| [hotspot=cluster file=0]`cluster.ip`                         | IP or hostname for your cluster.
+| [hotspot=system-service file=0]`system.kube.service`         | Name of the Kubernetes Service wrapping the `system` pods, `system-service` by default.
 | [hotspot=system-node-port]`system.node.port`          | The NodePort of the Kubernetes Service `system-service`, 31000 by default.
 |===
 
@@ -486,7 +506,7 @@ kubectl delete -f deployment.yaml
 Delete the ECR repositories used to store the `system` image:
 [role=command]
 ```
-aws ecr delete-repository --repository-name awsguide/system/instantOn --force
+aws ecr delete-repository --repository-name awsguide/system --force
 ```
 
 Remove your EKS cluster:
