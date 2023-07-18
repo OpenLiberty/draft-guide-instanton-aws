@@ -429,20 +429,20 @@ This URL returns system properties and the name of the pod in an HTTP header cal
 
 == Testing microservices that are running on AWS EKS
 
-
+// File 1
 pom.xml
 [source, XML, linenums, role='code_column']
 ----
 include::finish/system/pom.xml[]
 ----
 
-A few tests are included for you to test the basic functionality of the microservices. If a test failure occurs, then you might have introduced a bug into the code. To run the tests, wait for all pods to be in the ready state before you proceed further. The default properties defined in the [hotspot]`pom.xml` file are:
+A few tests are included for you to test the basic functionality of the microservices. If a test failure occurs, then you might have introduced a bug into the code. To run the tests, wait for all pods to be in the ready state before you proceed further. The default properties defined in the [hotspot file=1]`pom.xml` file are:
 
 [cols="15, 100", options="header"]
 |===
 | *Property*                                | *Description*
-| [hotspot=cluster file=1]`cluster.ip`                         | IP or hostname for your cluster.
-| [hotspot=system-service file=1]`system.kube.service`         | Name of the Kubernetes Service wrapping the `system` pods, `system-service` by default.
+| [hotspot=cluster file=0]`cluster.ip`                         | IP or hostname for your cluster.
+| [hotspot=system-service file=0]`system.kube.service`         | Name of the Kubernetes Service wrapping the `system` pods, `system-service` by default.
 | [hotspot=system-node-port file=1]`system.node.port`          | The NodePort of the Kubernetes Service `system-service`, 31000 by default.
 |===
 
