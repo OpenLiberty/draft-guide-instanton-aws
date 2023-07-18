@@ -193,42 +193,33 @@ aws configure list
 
 === Provisioning a cluster
 
-SOMETHING ABOUT THIS TOPIC
-
-[role="code_command hotspot", subs="quotes"]
-----
-#Update the `cluster.yaml` file in the `start` directory.#
-`cluster.yaml`
-----
-
-Verify region from your aws management console taskbar. For example region for Ohio is us-east-2 
-
-cluster.yaml
-
-[source, yaml, linenums, role='code_column']
-
-----
-include::finish/cluster.yaml[]
-----
-
 The `eksctl` CLI tool greatly simplifies the process of creating clusters on EKS. To create your cluster, use the `eksctl create cluster` command:
 
 [role=command]
 ```
-eksctl create cluster -f cluster.yaml
+eksctl create cluster --name=guide-cluster --nodes=1 --node-type=t2.small
 ```
 
-After your cluster is ready, EKS connects kubectl to the cluster. After about 15 minutes, the cluster should be provisioned and ready to use. Double check by running the following command to see the cluster  nodes::
+Running this command creates a cluster that is called `guide-cluster` that uses a single `t2.small` Amazon Elastic Compute Cloud (EC2) instance as the worker node. The `t2.small` EC2 instance is not included in the AWS free tier. See the official https://aws.amazon.com/ec2/pricing/on-demand/[Amazon EC2 pricing^] documentation for more details. When the cluster is created, you see an output similar to the following:
+
+[source, role="no_copy"]
+```
+[✔]  EKS cluster "guide-cluster" in "us-east-2" region is ready
+```
+
+After your cluster is ready, EKS connects `kubectl` to the cluster. Verify that you're connected to the cluster by checking the cluster's nodes:
 
 [role=command]
 ```
-kubectl get node -o wide
+kubectl get nodes
 ```
+
 [source, role="no_copy"]
 ----
 NAME                            STATUS    ROLES     AGE       VERSION
 ip.us-east-2.compute.internal   Ready     <none>    7m        v1.11.5
 ----
+
 
 // =================================================================================================
 // Installing the Operator
@@ -512,7 +503,7 @@ aws ecr delete-repository --repository-name awsguide/system --force
 Remove your EKS cluster:
 [role=command]
 ```
-eksctl delete -f cluster.yaml
+eksctl delete cluster --name guide-cluster
 ```
 
 
