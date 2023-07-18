@@ -286,8 +286,7 @@ Start by running the `get-login` command. The `get-login` command returns the [p
 aws ecr get-login-password | sudo podman login --username AWS --password-stdin [aws_account_id].dkr.ecr.[region].amazonaws.com
 ```
 
-After you are authenticated, create a repository for the instanton container image, in the private Amazon ECR registry, and take note of the repositoryUri value. It should match the `[aws_account_id].dkr.ecr.[region].amazonaws.com//instantOn/instantOn` pattern. For example: `1234567890.dkr.ecr.us-east-1.amazonaws.com/instantOn`. You will need this value when you create the `kubernetes.yaml` file to deploy the InstantOn application.
-
+After you are authenticated, create a repository for the instanton container image, in the private Amazon ECR registry.
 Next, make a repository to store the `system` image:
 [role=command]
 ```
