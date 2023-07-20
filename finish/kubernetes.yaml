@@ -4,7 +4,7 @@ kind: OpenLibertyApplication
 metadata:
   name: system
 spec:
-  applicationImage: 439159788015.dkr.ecr.us-east-2.amazonaws.com/instantonaws/system:1.0-SNAPSHOT
+  applicationImage: [system-repository-uri]
   pullPolicy: IfNotPresent
   manageTLS: false
   replicas: 3
