@@ -383,7 +383,7 @@ You will see an output similar to the following:
         "repositoryName": "instantonaws/system",
         "repositoryArn": "arn:aws:ecr:[region]:[aws_account_id]:repository/instantonaws/system",
         "createdAt": 1553111916.0,
-        "repositoryUri": "[aws_account_id].ecr.[region].amazonaws.com/instantonaws/system"
+        "repositoryUri": "[aws_account_id].dkr.ecr.[region].amazonaws.com/instantonaws/system"
     }
 }
 ```
@@ -446,9 +446,15 @@ kubectl get pods
 If all the pods are healthy and running, you see an output similar to the following:
 [source, role="no_copy"]
 ----
-NAME                                    READY     STATUS    RESTARTS   AGE
-system-deployment-6bd97d9bf6-4ccds      1/1       Running   0          15s
+NAME                                        READY   STATUS    RESTARTS   AGE
+olo-controller-manager-58d7788bd-nk7cc      1/1     Running   0          44m
+system-deployment-6d559bbcf9-xt7t6          1/1     Running   0          8m40s
+system-semeru-compiler-1-58666f5d56-dmhm8   0/1     Pending   0          2m39s
+system-semeru-compiler-1-58666f5d56-hs85x   1/1     Running   0          2m39s
+system-semeru-compiler-1-58666f5d56-s2pds   0/1     Pending   0          2m39s
 ----
+
+The `first` pod refers to the Open Liberty Operator. The `second` one for the microservice we deployed and the `last three` for the three replicas of Semeru Cloud Compiler.
 
 To check the semeru cloud compiler and instanton deployments, execute the following command:
 
