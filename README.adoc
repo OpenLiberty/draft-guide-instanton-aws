@@ -91,26 +91,28 @@ After you see the following message, your application server is ready:
 
 [source, role="no_copy"]
 ----
-The defaultServer server is ready to run a smarter planet.
+The defaultServer server is ready to run a smarter planet. The defaultServer server started in 11.483 seconds.
 ----
 
 After you finish checking out the application, stop the Open Liberty server by pressing CTRL+C in the command-line session where you ran the server.
-
-To build the WAR for the application run the following :
-
-[role=command]
-```
-mvn package
-```
-
-This command builds a target/guide-instantOn-draft-system.war archive. We can now include this WAR in a container image that uses the InstantOn feature.
-
 
 === Try InstantOn image locally 
 
 [#build]
 
 Building the InstantOn image with Podman and the checkpoint.sh script
+
+Navigate to the `start` directory. To build the WAR for the application run the following :
+
+[role=command]
+```
+mvn install
+
+mvn package
+```
+
+This command builds a target/guide-instantOn-draft-system.war archive. We can now include this WAR in a container image that uses the InstantOn feature.
+
 
 You can use the `checkpoint.sh` script to perform the application checkpoint by adding the `RUN checkpoint.sh` instruction to the end of your `Dockerfile` or `Containerfile` file. The execution of the `checkpoint.sh` must be the last `RUN` instruction during your container image build. This configuration performs the application process checkpoint and stores the process data as the last layer of the application container image. Currently, this script requires you to use Podman rather than Docker because Docker cannot grant the necessary Linux capabilities.
 
