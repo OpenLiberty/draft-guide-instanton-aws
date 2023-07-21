@@ -17,9 +17,15 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <!-- Default test properties -->
+        <!-- tag::cluster[] -->
         <cluster.ip>localhost</cluster.ip>
+        <!-- end::cluster[] -->
+        <!-- tag::system-service[] -->
          <system.kube.service>system-service</system.kube.service>
+         <!-- end::system-service -->
+         <!-- tag::system-node-port -->
         <system.node.port>31000</system.node.port>
+        <!-- end::system-node-port -->
         <!-- Liberty configuration -->
         <liberty.var.default.http.port>9080</liberty.var.default.http.port>
         <liberty.var.default.https.port>9443</liberty.var.default.https.port>
