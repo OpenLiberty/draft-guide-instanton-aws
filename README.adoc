@@ -58,7 +58,7 @@ You must run this guide in a Linux environment.
 
 Before you begin, the following additional tools need to be installed:
 
-* *Linux:* You need to use kernel version of 5.9 or greater with the X86-64/AMD64 processor.
+* *Linux:* You need to use kernel version of 5.9 or greater for Ubuntu or RHEL 9.0+ along with the X86-64/AMD64 processor.
 
 * *Podman:* You need containerization software for building containers. Kubernetes supports various container types, but you will need the latest available version of Podman in this guide. For installation instructions, refer to the official https://podman.io/docs/installation documentation.
 
