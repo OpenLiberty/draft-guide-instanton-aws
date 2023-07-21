@@ -4,7 +4,7 @@ kind: OpenLibertyApplication
 metadata:
   name: system
 spec:
-  applicationImage: [system-repository-uri]
+  applicationImage: [system-repository-uri]::1.0-SNAPSHOT
   pullPolicy: IfNotPresent
   manageTLS: false
   replicas: 3
