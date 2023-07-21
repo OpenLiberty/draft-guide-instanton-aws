@@ -7,7 +7,7 @@
 // Contributors:
 //     IBM Corporation
 //
-:projectid: instantOn-draft
+:projectid: instanton-aws
 :page-layout: guide-multipane
 :page-duration: 45 minutes
 :page-releasedate: 2023-07-06
@@ -20,9 +20,9 @@
 :page-seo-title: Deploying Java microservices in Open Liberty InstantOn container to Amazon Elastic Kubernetes Service (AWSEKS) ) on Amazon Web Services (AWS)
 :page-seo-description: A getting started tutorial with examples on how to deploy Java microservices in Open Liberty InstantOncontainer and enable IBM Semeru Cloud Compiler (SCC) to Amazon Elastic Kubernetes Service (EKS) onAmazon Web Services (AWS) by using Amazon Elastic Container Registry (ECR) as a private container registry.
 :guide-author: Open Liberty
-= Deploying microservices to Amazon Web Services
+= Deploying a microservice to Amazon Web Services
 
-Deploying microservices in Open Liberty InstantOn container to Amazon Web Services
+Deploying a microservice in Open Liberty InstantOn container to Amazon Web Services
 
 [.hidden]
 NOTE: This repository contains the guide documentation source. To view the guide in published form, view it on the https://openliberty.io/guides/{projectid}.html[Open Liberty website^].
@@ -41,7 +41,7 @@ NOTE: This repository contains the guide documentation source. To view the guide
 
 == What you'll learn
 
-You will learn how to deploy two microservices in Open Liberty containers to a Kubernetes cluster on Amazon Elastic Container Service for Kubernetes (EKS). 
+You will learn how to deploy system microservice in Open Liberty containers to a Kubernetes cluster on Amazon Elastic Container Service for Kubernetes (EKS). 
 
 Amazon Web Services (AWS) offers a managed Kubernetes service called Amazon Elastic Container Service for kubernetes (EKS). EKS simplifies the process of running Kubernetes on AWS without needing to install or maintain your Kubernetes control plane. It provides a hosted kubernetes cluster where you can deploy your microservices. You will use EKS with Amazon Elastic Container Registry (ECR). Amazon ECR is a private registry that is used to store and distribute your container images. Note, because EKS is not free, there is a small cost that is associated with running this guide. See the official https://aws.amazon.com/eks/pricing/[Amazon EKS pricing^] documentation for more details.
 
@@ -97,7 +97,7 @@ The defaultServer server is ready to run a smarter planet. The defaultServer ser
 
 After you finish checking out the application, stop the Open Liberty server by pressing CTRL+C in the command-line session where you ran the server.
 
-=== Try InstantOn image locally 
+== Try InstantOn image locally 
 
 [#build]
 
@@ -112,7 +112,7 @@ mvn install
 mvn package
 ```
 
-This command builds a target/guide-instantOn-draft-system.war archive. We can now include this WAR in a container image that uses the InstantOn feature.
+This command builds a target/guide-instanton-aws-system.war archive. We can now include this WAR in a container image that uses the InstantOn feature.
 
 
 You can use the `checkpoint.sh` script to perform the application checkpoint by adding the `RUN checkpoint.sh` instruction to the end of your `Dockerfile` or `Containerfile` file. The execution of the `checkpoint.sh` must be the last `RUN` instruction during your container image build. This configuration performs the application process checkpoint and stores the process data as the last layer of the application container image. Currently, this script requires you to use Podman rather than Docker because Docker cannot grant the necessary Linux capabilities.
