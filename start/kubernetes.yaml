@@ -1,34 +1,104 @@
-
-apiVersion: apps.openliberty.io/v1
-kind: OpenLibertyApplication
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: system
+  name: system-deployment
+  labels:
+    app: system
 spec:
-  applicationImage: [system-repository-uri]
-  pullPolicy: IfNotPresent
-  manageTLS: false
-  replicas: 3
-  resources:
-    limits:
-      cpu: 1
-      memory: 512Mi
-    requests:
-      cpu: 500m
-      memory: 256Mi
-  service:
-    type: ClusterIP
+  selector:
+    matchLabels:
+      app: system
+  template:
+    metadata:
+      labels:
+        app: system
+    spec:
+      containers:
+      - name: system-container
+        image: [system-repository-uri]:1.0-SNAPSHOT
+        ports:
+        - containerPort: 9080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory-deployment
+  labels:
+    app: inventory
+spec:
+  selector:
+    matchLabels:
+      app: inventory
+  template:
+    metadata:
+      labels:
+        app: inventory
+    spec:
+      containers:
+      - name: inventory-container
+        image: [inventory-repository-uri]:1.0-SNAPSHOT
+        ports:
+        - containerPort: 9080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: system-service
+spec:
+  type: NodePort
+  selector:
+    app: system
+  ports:
+  - protocol: TCP
     port: 9080
-  expose: true
-  securityContext:
-    runAsNonRoot: true
-    privileged: false
-    allowPrivilegeEscalation: true
-    capabilities:
-      add:
-      - CHECKPOINT_RESTORE
-      - SETPCAP
-      drop:
-      - ALL
-  semeruCloudCompiler:
-    enable: true
-    replicas: 3
+    targetPort: 9080
+    nodePort: 31000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: inventory-service
+spec:
+  type: NodePort
+  selector:
+    app: inventory
+  ports:
+  - protocol: TCP
+    port: 9080
+    targetPort: 9080
+    nodePort: 32000
+
+
+# apiVersion: apps.openliberty.io/v1
+# kind: OpenLibertyApplication
+# metadata:
+#   name: system
+# spec:
+#   applicationImage: [system-repository-uri]
+#   pullPolicy: IfNotPresent
+#   manageTLS: false
+#   replicas: 3
+#   resources:
+#     limits:
+#       cpu: 1
+#       memory: 512Mi
+#     requests:
+#       cpu: 500m
+#       memory: 256Mi
+#   service:
+#     type: ClusterIP
+#     port: 9080
+#   expose: true
+#   securityContext:
+#     runAsNonRoot: true
+#     privileged: false
+#     allowPrivilegeEscalation: true
+#     capabilities:
+#       add:
+#       - CHECKPOINT_RESTORE
+#       - SETPCAP
+#       drop:
+#       - ALL
+#   semeruCloudCompiler:
+#     enable: true
+#     replicas: 3
