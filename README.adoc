@@ -43,7 +43,7 @@ NOTE: This repository contains the guide documentation source. To view the guide
 
 You will learn how to deploy system microservice in Open Liberty containers to a Kubernetes cluster on Amazon Elastic Container Service for Kubernetes (EKS). 
 
-Amazon Web Services (AWS) offers a managed Kubernetes service called Amazon Elastic Container Service for kubernetes (EKS). EKS simplifies the process of running Kubernetes on AWS without needing to install or maintain your Kubernetes control plane. It provides a hosted kubernetes cluster where you can deploy your microservices. You will use EKS with Amazon Elastic Container Registry (ECR). Amazon ECR is a private registry that is used to store and distribute your container images. Note, because EKS is not free, there is a small cost that is associated with running this guide. See the official https://aws.amazon.com/eks/pricing/[Amazon EKS pricing^] documentation for more details.
+Amazon Web Services (AWS) offers a managed Kubernetes service called Amazon Elastic Container Service for kubernetes (EKS). EKS simplifies the process of running Kubernetes on AWS without needing to install or maintain your Kubernetes control plane. It provides a hosted kubernetes cluster where you can deploy your microservices. You will use EKS with Amazon Elastic Container Registry (ECR). Amazon ECR is a private registry that is used to store and distribute your container images. Note, because EKS is not free, there is a small cost that is associated with running this guide. See the official https://aws.amazon.com/eks/pricing/[Amazon EKS pricing^] documentation for more information.
 
 Open Liberty InstantOn provides fast startup times for MicroProfile and Jakarta EE applications. With InstantOn, your applications can start in milliseconds, without compromising on throughput, memory, development-production parity, or Java language features.
 
@@ -80,24 +80,7 @@ include::{common-includes}/gitclone.adoc[]
 
 // no "try what you'll build" section in this guide because it would be too long due to all setup the user will have to do.
 
-We will work within the finish/ directory for this demonstration. To try out the application, run the following Maven goal to build the application and deploy it to Open Liberty:
-
-[role=command]
-```
-cd finish
-mvn liberty:run
-```
-
-After you see the following message, your application server is ready:
-
-[source, role="no_copy"]
-----
-The defaultServer server is ready to run a smarter planet. The defaultServer server started in 11.483 seconds.
-----
-
-After you finish checking out the application, stop the Open Liberty server by pressing CTRL+C in the command-line session where you ran the server.
-
-== Try InstantOn image locally 
+== Building the InstantOn image 
 
 [#build]
 
@@ -107,21 +90,14 @@ Navigate to the `start` directory. To build the WAR for the application run the 
 
 [role=command]
 ```
-mvn install
-
 mvn package
 ```
 
-This command builds a target/guide-instanton-aws-system.war archive. We can now include this WAR in a container image that uses the InstantOn feature.
-
-
-You can use the `checkpoint.sh` script to perform the application checkpoint by adding the `RUN checkpoint.sh` instruction to the end of your `Dockerfile` or `Containerfile` file. The execution of the `checkpoint.sh` must be the last `RUN` instruction during your container image build. This configuration performs the application process checkpoint and stores the process data as the last layer of the application container image. Currently, this script requires you to use Podman rather than Docker because Docker cannot grant the necessary Linux capabilities.
-
-The following image template example uses the `kernel-slim-java17-openj9-ubi` tag to build an image that uses the latest Open Liberty release with the IBM Semeru distribution of Java 17. This example uses the `afterAppStart` checkpoint option.
+The following image template example uses the `kernel-slim-java17-openj9-ubi` tag to build an image that uses the latest Open Liberty release with the IBM Semeru distribution of Java 17. 
 
 [role="code_command hotspot file=0",subs="quotes"]
 ----
-#Create the `Dockerfile` in the `start` directory.#
+#Create the `Dockerfile`.#
 `system/Dockerfile`
 ----
 
@@ -131,6 +107,8 @@ Dockerfile
 ----
 include::finish/system/Dockerfile[]
 ----
+
+You can use the `checkpoint.sh` script to perform the application checkpoint by adding the `RUN checkpoint.sh` instruction to the end of your `Dockerfile` or `Containerfile` file. The execution of the `checkpoint.sh` must be the last `RUN` instruction during your container image build. This configuration performs the application process checkpoint and stores the process data as the last layer of the application container image. Currently, this script requires you to use Podman rather than Docker because Docker cannot grant the necessary Linux capabilities. This example uses the `afterAppStart` checkpoint option. See https://openliberty.io/docs/latest/instanton.html#afterAppStart documentation for more information on `checkpoint.sh`. 
 
 Use the following Podman command to build the InstantOn application container image. To grant the necessary Linux capabilities to the container image build, this command must be run either as the `root` user or by using the `sudo` utility.
 
@@ -179,14 +157,14 @@ podman run \
   system:1.0-SNAPSHOT
 ----
 
-After you finish checking out the application, stop the Open Liberty server by pressing CTRL+C in the command-line session where you ran the server.
-
 [source, role="no_copy"]
 ----
 [AUDIT   ] CWWKF0011I: The defaultServer server is ready to run a smarter planet. The defaultServer server started in 0.298 seconds.
 ----
 
-More detailed information on InstantOn application image can be found on https://openliberty.io/docs/latest/instanton.html.
+Notice that the startup time is less than 1 second. After you finish checking out the application, stop the Open Liberty server by pressing `CTRL+C` in the command-line session where you ran the server.
+
+For more information on InstantOn application image, see https://openliberty.io/docs/latest/instanton.html.
 
 // =================================================================================================
 // Creating a Kubernetes cluster on EKS
@@ -361,7 +339,7 @@ Pushing the images to a registry allows the cluster to create pods by using your
 
 Authenticate to the registry using the following command so you can push or pull images using Podman:
 
-Start by running the `get-login` command. The `get-login` command returns the [password_string]. The `password-stdin` flag provides the password returned by `get-login`. Replace the `[aws_account_id]` and the `[region]` your account is configured under in the following `sudo podman` command, that is used to authenticate your Podman client.
+Start by running the `get-login` command. The `get-login` command returns the `[password_string]`. The `password-stdin` flag provides the password returned by `get-login`. Replace the `[aws_account_id]` and the `[region]` your account is configured under in the following `sudo podman` command, that is used to authenticate your Podman client.
 
 [role=command]
 ```
