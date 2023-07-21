@@ -20,13 +20,12 @@
 :page-seo-title: Deploying Java microservices in Open Liberty InstantOn container to Amazon Elastic Kubernetes Service (AWSEKS) ) on Amazon Web Services (AWS)
 :page-seo-description: A getting started tutorial with examples on how to deploy Java microservices in Open Liberty InstantOncontainer and enable IBM Semeru Cloud Compiler (SCC) to Amazon Elastic Kubernetes Service (EKS) onAmazon Web Services (AWS) by using Amazon Elastic Container Registry (ECR) as a private container registry.
 :guide-author: Open Liberty
-
-
 = Deploying microservices to Amazon Web Services
+
+Deploying microservices in Open Liberty InstantOn container to Amazon Web Services
 
 [.hidden]
 NOTE: This repository contains the guide documentation source. To view the guide in published form, view it on the https://openliberty.io/guides/{projectid}.html[Open Liberty website^].
-Deploying microservices in Open Liberty InstantOn container to Amazon Web Services
 :kube: Kubernetes
 :hashtag: #
 :win: WINDOWS
