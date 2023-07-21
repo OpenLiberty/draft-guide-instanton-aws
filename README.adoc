@@ -106,7 +106,7 @@ mvn package
 This command builds a target/guide-instantOn-draft-system.war archive. We can now include this WAR in a container image that uses the InstantOn feature.
 
 
-=== Try InstantOn image locally - 
+=== Try InstantOn image locally 
 
 [#build]
 
