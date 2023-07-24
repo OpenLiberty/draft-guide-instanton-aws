@@ -408,7 +408,7 @@ kubernetes.yaml
 include::finish/kubernetes.yaml[]
 ----
 [role="edit_command_text"]
-Update the value of [hotspot=7 hotspot=39]`applicationImage` to point to your `system` repository URI.
+Update `[system-repository-uri]` in [hotspot=7 hotspot=39]`applicationImage` field to point to your `system` repository URI.
 
 
 Deploy the application by running the following command:
