@@ -408,7 +408,7 @@ kubernetes.yaml
 include::finish/kubernetes.yaml[]
 ----
 [role="edit_command_text"]
-The [hotspot=7 hotspot=39]`applicationImage` is the name and tag of the container image that you want to use for the container. Update its value to point to your `system` repository URI.
+Update the value of [hotspot=7 hotspot=39]`applicationImage` to point to your `system` repository URI.
 
 
 Deploy the application by running the following command:
