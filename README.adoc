@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2019, 2022 IBM Corporation and others.
+// Copyright (c) 2023 IBM Corporation and others.
 // Licensed under Creative Commons Attribution-NoDerivatives
 // 4.0 International (CC BY-ND 4.0)
 //   https://creativecommons.org/licenses/by-nd/4.0/
@@ -10,22 +10,23 @@
 :projectid: instanton-aws
 :page-layout: guide-multipane
 :page-duration: 45 minutes
-:page-releasedate: 2023-07-06
-:page-description: Learn how to deploy a microservice in Open Liberty InstantOn container and enable IBM Semeru CloudCompiler to Amazon Elastic Kubernetes Service (EKS) on Amazon Web Services (AWS) to speed up the start-upprocess of your application.
-:page-tags: ['Kubernetes', 'Podman', 'Semeru Cloud']
+:page-releasedate: 2023-08-31
+:page-description: Learn how to containerize a microservice with Open Liberty InstantOn, deploy the container and enable IBM Semeru Cloud Compiler in your deployment to Amazon Elastic Container Service for Kubernetes (EKS) on Amazon Web Services (AWS).
+:page-tags: ['Kubernetes', 'Docker', 'Cloud']
 :page-permalink: /guides/{projectid}
 :page-related-guides: ['kubernetes-intro', 'kubernetes-microprofile-config', 'kubernetes-microprofile-health', 'istio-intro']
 :common-includes: https://raw.githubusercontent.com/OpenLiberty/guides-common/prod
 :source-highlighter: prettify
-:page-seo-title: Deploying a Java microservice in Open Liberty InstantOn container to Amazon Elastic Kubernetes Service (AWSEKS) ) on Amazon Web Services (AWS)
-:page-seo-description: A getting started tutorial with examples on how to deploy a Java microservice in Open Liberty InstantOncontainer and enable IBM Semeru Cloud Compiler (SCC) to Amazon Elastic Kubernetes Service (EKS) onAmazon Web Services (AWS) by using Amazon Elastic Container Registry (ECR) as a private container registry.
+:page-seo-title: Containerizing a Java microservice with Open Liberty InstantOn, deploy your application and enable IBM Semeru Cloud Compiler (SCC) in your deployment to Amazon Elastic Container Service for Kubernetes (EKS) on Amazon Web Services (AWS).
+:page-seo-description: A getting started tutorial with examples on how to containerize a Java microservice with Open Liberty InstantOn feature,deploy your application and enable IBM Semeru Cloud Compiler (SCC) to Amazon Elastic Kubernetes Service (EKS) onAmazon Web Services (AWS) by using Amazon Elastic Container Registry (ECR) as a private container registry.
 :guide-author: Open Liberty
-= Deploying a microservice to Amazon Web Services
-
-Deploying a microservice in Open Liberty InstantOn container to Amazon Web Services
+= Containerizing a microservice with Open Liberty InstantOn and deploying to Amazon Web Services
 
 [.hidden]
 NOTE: This repository contains the guide documentation source. To view the guide in published form, view it on the https://openliberty.io/guides/{projectid}.html[Open Liberty website^].
+
+Explore how to containerize a microservice with Open Liberty InstantOn and deploy the container to Amazon Elastic Container Service for Kubernetes (EKS) on Amazon Web Services (AWS).
+
 :kube: Kubernetes
 :hashtag: #
 :win: WINDOWS
@@ -41,13 +42,14 @@ NOTE: This repository contains the guide documentation source. To view the guide
 
 == What you'll learn
 
-You will learn how to deploy system microservice in Open Liberty containers to a Kubernetes cluster on Amazon Elastic Container Service for Kubernetes (EKS). 
+You will learn how to containize a microservice with Open Liberty InstantOn and deploy the container to a Kubernetes cluster on Amazon Elastic Container Service for Kubernetes (EKS).
+
+https://openliberty.io/docs/latest/instanton.html[Open Liberty InstantOn^] provides fast startup times for MicroProfile and Jakarta EE applications. Your applications can start in milliseconds, without compromising on throughput, memory, development-production parity, or Java language features.
 
 Amazon Web Services (AWS) offers a managed Kubernetes service called Amazon Elastic Container Service for kubernetes (EKS). EKS simplifies the process of running Kubernetes on AWS without needing to install or maintain your Kubernetes control plane. It provides a hosted kubernetes cluster where you can deploy your microservices. You will use EKS with Amazon Elastic Container Registry (ECR). Amazon ECR is a private registry that is used to store and distribute your container images. Note, because EKS is not free, there is a small cost that is associated with running this guide. See the official https://aws.amazon.com/eks/pricing/[Amazon EKS pricing^] documentation for more information.
 
-Open Liberty InstantOn provides fast startup times for MicroProfile and Jakarta EE applications. With InstantOn, your applications can start in milliseconds, without compromising on throughput, memory, development-production parity, or Java language features.
 
-The microservice you will deploy are called `system`. The `system` microservice returns the JVM system properties of the running container. It also returns the pod’s name in the HTTP header, making replicas easy to distinguish from each other. 
+The microservice you will deploy is called `system`. The `system` microservice returns the JVM system properties of the running container. It also returns the pod’s name in the HTTP header, making replicas easy to distinguish from each other.
 
 // =================================================================================================
 // Prerequisites
