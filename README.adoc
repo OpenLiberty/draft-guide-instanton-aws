@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2019, 2022 IBM Corporation and others.
+// Copyright (c) 2023 IBM Corporation and others.
 // Licensed under Creative Commons Attribution-NoDerivatives
 // 4.0 International (CC BY-ND 4.0)
 //   https://creativecommons.org/licenses/by-nd/4.0/
@@ -10,29 +10,23 @@
 :projectid: instanton-aws
 :page-layout: guide-multipane
 :page-duration: 45 minutes
-:page-releasedate: 2023-07-06
-:page-description: Learn how to deploy a microservice in Open Liberty InstantOn container and enable IBM Semeru CloudCompiler to Amazon Elastic Kubernetes Service (EKS) on Amazon Web Services (AWS) to speed up the start-upprocess of your application.
-:page-tags: ['Kubernetes', 'Podman', 'Semeru Cloud']
+:page-releasedate: 2023-08-31
+:page-description: Learn how to speed up your containers using Open Liberty InstantOn and improve the CPU and memory usage using Semeru Cloud Compiler on Amazon Web Services (AWS).
+:page-tags: ['Kubernetes', 'Docker', 'Cloud']
 :page-permalink: /guides/{projectid}
 :page-related-guides: ['kubernetes-intro', 'kubernetes-microprofile-config', 'kubernetes-microprofile-health', 'istio-intro']
 :common-includes: https://raw.githubusercontent.com/OpenLiberty/guides-common/prod
 :source-highlighter: prettify
-:page-seo-title: Deploying a Java microservice in Open Liberty InstantOn container to Amazon Elastic Kubernetes Service (AWSEKS) ) on Amazon Web Services (AWS)
-:page-seo-description: A getting started tutorial with examples on how to deploy a Java microservice in Open Liberty InstantOncontainer and enable IBM Semeru Cloud Compiler (SCC) to Amazon Elastic Kubernetes Service (EKS) onAmazon Web Services (AWS) by using Amazon Elastic Container Registry (ECR) as a private container registry.
+:page-seo-title: Speeding up startup time using Open Liberty InstantOn and improving CPU and memory usage by enabling Semeru Cloud Compiler (SCC) in your deployment to Amazon Elastic Container Service for Kubernetes (EKS) on Amazon Web Services (AWS).
+:page-seo-description: A getting started tutorial with examples on how to containerize a Java microservice with Open Liberty InstantOn feature to speed up the startup time. To improve the CPU and memory usage, deploy your application by enabling Semeru Cloud Compiler (SCC) in your deploying to Amazon Elastic Kubernetes Service (EKS) on Amazon Web Services (AWS) by using Amazon Elastic Container Registry (ECR) as a private container registry.
 :guide-author: Open Liberty
-= Deploying a microservice to Amazon Web Services
-
-Deploying a microservice in Open Liberty InstantOn container to Amazon Web Services
+= Speeding up startup and improving CPU and memory usage of containers on Amazon Web Services
 
 [.hidden]
 NOTE: This repository contains the guide documentation source. To view the guide in published form, view it on the https://openliberty.io/guides/{projectid}.html[Open Liberty website^].
-:kube: Kubernetes
-:hashtag: #
-:win: WINDOWS
-:mac: MAC
-:linux: LINUX
-:system-api: http://[hostname]:31000/system/properties
-:inventory-api: http://[hostname]:32000/inventory/systems
+
+Explore how to speed up your containers by using Open Liberty InstantOn and improve the CPU and memory usage by enabling Semeru Cloud Compiler in your deployment to Amazon Elastic Container Service for Kubernetes (EKS) on Amazon Web Services (AWS). 
+
 
 
 // =================================================================================================
@@ -41,13 +35,16 @@ NOTE: This repository contains the guide documentation source. To view the guide
 
 == What you'll learn
 
-You will learn how to deploy system microservice in Open Liberty containers to a Kubernetes cluster on Amazon Elastic Container Service for Kubernetes (EKS). 
+You will learn how to containize a microservice with Open Liberty InstantOn and deploy the container with Semeru Cloud Compiler enablement to a Kubernetes cluster on Amazon Elastic Container Service for Kubernetes (EKS).
+
+https://openliberty.io/docs/latest/instanton.html[Open Liberty InstantOn^] provides fast startup times for MicroProfile and Jakarta EE applications. Your applications can start in milliseconds, without compromising on throughput, memory, development-production parity, or Java language features.
+
+Semeru Cloud Compiler uses the https://eclipse.dev/openj9/docs/jitserver[JITServer^] (Just-in-Time Server) technology that is included in the https://www.eclipse.org/openj9/[Eclipse OpenJ9 JVM^]. It decouples the JIT compiler from the JVM to prevent your Java application from suffering possible negative effects due to CPU and memory consumption caused by JIT compilation in the JVM.
 
 Amazon Web Services (AWS) offers a managed Kubernetes service called Amazon Elastic Container Service for kubernetes (EKS). EKS simplifies the process of running Kubernetes on AWS without needing to install or maintain your Kubernetes control plane. It provides a hosted kubernetes cluster where you can deploy your microservices. You will use EKS with Amazon Elastic Container Registry (ECR). Amazon ECR is a private registry that is used to store and distribute your container images. Note, because EKS is not free, there is a small cost that is associated with running this guide. See the official https://aws.amazon.com/eks/pricing/[Amazon EKS pricing^] documentation for more information.
 
-Open Liberty InstantOn provides fast startup times for MicroProfile and Jakarta EE applications. With InstantOn, your applications can start in milliseconds, without compromising on throughput, memory, development-production parity, or Java language features.
 
-The microservice you will deploy are called `system`. The `system` microservice returns the JVM system properties of the running container. It also returns the pod’s name in the HTTP header, making replicas easy to distinguish from each other. 
+The microservice you will deploy is called `system`. The `system` microservice returns the JVM system properties of the running container. It also returns the pod’s name in the HTTP header, making replicas easy to distinguish from each other.
 
 // =================================================================================================
 // Prerequisites
@@ -55,11 +52,12 @@ The microservice you will deploy are called `system`. The `system` microservice 
 
 == Additional prerequisites
 
-You must run this guide in a Linux environment.
+You must run this guide in a Linux environment with the X86-64/AMD64 processor and the following version:
 
-Before you begin, the following additional tools need to be installed:
+* *Ubuntu:* kernel version must be 5.9 or greater
+* *RHEL:*   version must be 9.0 or greater
 
-* *Linux:* You need to use kernel version of 5.9 or greater for Ubuntu or RHEL 9.0+ along with the X86-64/AMD64 processor.
+Before you begin, the following additional tools need to be installed on your Linux:
 
 * *Podman:* You need containerization software for building containers. Kubernetes supports various container types, but you will need the latest available version of Podman in this guide. For installation instructions, refer to the official https://podman.io/docs/installation documentation.
 
@@ -80,51 +78,55 @@ include::{common-includes}/gitclone.adoc[]
 
 // no "try what you'll build" section in this guide because it would be too long due to all setup the user will have to do.
 
-== Building the InstantOn image 
+== Building your InstantOn image 
 
-[#build]
+To speed up your container startup time, build your container image with the Open Liberty InstantOn.
 
-Building the InstantOn image with Podman and the checkpoint.sh script
-
-Navigate to the `start` directory. To build the WAR for the application run the following :
+Navigate to the `start` directory. Run the following command to build and package the `system` microservice to a war file:
 
 [role=command]
 ```
 mvn package
 ```
 
-The following image template example uses the `kernel-slim-java17-openj9-ubi` tag to build an image that uses the latest Open Liberty release with the IBM Semeru distribution of Java 17. 
-
+To containize your microservice, use the `kernel-slim-java17-openj9-ubi` Liberty container image that uses the Open Liberty basic runtime with the Semeru Runtime 17.
+ 
 [role="code_command hotspot file=0",subs="quotes"]
 ----
-#Create the `Dockerfile`.#
-`system/Dockerfile`
+#Create the `Containerfile`.#
+`system/Containerfile`
 ----
 
 // File 0
-Dockerfile
+Containerfile
 [source, text, linenums, role="code_column"]
 ----
-include::finish/system/Dockerfile[]
+include::finish/system/Containerfile[]
 ----
 
-You can use the `checkpoint.sh` script to perform the application checkpoint by adding the `RUN checkpoint.sh` instruction to the end of your `Dockerfile` or `Containerfile` file. The execution of the `checkpoint.sh` must be the last `RUN` instruction during your container image build. This configuration performs the application process checkpoint and stores the process data as the last layer of the application container image. Currently, this script requires you to use Podman rather than Docker because Docker cannot grant the necessary Linux capabilities. This example uses the `afterAppStart` checkpoint option. See https://openliberty.io/docs/latest/instanton.html#afterAppStart documentation for more information on `checkpoint.sh`. 
+Starting from the [hotspot=kernel-slim file=0]`kernel-slim-java17-openj9-ubi` Liberty container image, build the container image by copying the local [hotspot=config file=0]`config` directory to the container `config` directory, running the [hotspot=features file=0]`features.sh` script to add the Liberty features that your microservice is required to operate, copying your microservice [hotspot=war file=0]`war` file, and running the [hotspot=configure file=0]`configure.sh` script to get a pre-warmed container image.
 
-Use the following Podman command to build the InstantOn application container image. To grant the necessary Linux capabilities to the container image build, this command must be run either as the `root` user or by using the `sudo` utility.
+Finally, run the [hotspot=checkpoint file=0]`checkpoint.sh` script to make a checkpoint. The execution of the `checkpoint.sh` must be the last instruction during your container image build. This configuration performs the application process checkpoint and stores the process data as the last layer of the application container image. In this guide, use the `afterAppStart` checkpoint option. For more information about the checkpoint options, see the https://openliberty.io/docs/latest/instanton.html#beforeAppStart[Faster startup with InstantOn^] documentation.
+
+Use the following command to build the InstantOn container image. To grant the necessary Linux capabilities to the container image build, this command must be run either as the `root` user or by using the `sudo` utility.
 
 [role=command]
 ----
 podman build \
    -t dev.local/system:1.0-SNAPSHOT \
    --cap-add=CHECKPOINT_RESTORE \
-   --cap-add=SYS_PTRACE\
+   --cap-add=SYS_PTRACE \
    --cap-add=SETPCAP \
-   --security-opt seccomp=unconfined system/.
+   --security-opt seccomp=unconfined \
+   system/.
 ----
 
 The three `--cap-add` options grant the three Linux capabilities that CRIU requires to perform the application process checkpoint during the container image build. The `--security-opt` option grants access to all Linux system calls to the container image build.
 
-When the build finishes, run the following command to list all local images:
+
+For more information to build the InstantOn image by Docker, see the https://openliberty.io/docs/latest/instanton.html#three_step_process[Building the InstantOn image by using the three-step process with Docker or Podman^] documentation.
+
+To verify that the image is built, run the following command to list all local container images:
 
 [role=command]
 ```
@@ -137,14 +139,12 @@ Verify that the `system:1.0-SNAPSHOT` image is listed among them, for example:
 ----
 REPOSITORY                        TAG
 dev.local/system                  1.0-SNAPSHOT
-icr.io/appcafe/open-liberty       kernel-slim-java11-openj9-ubi       
+icr.io/appcafe/open-liberty       kernel-slim-java17-openj9-ubi       
 ----
 
 If you don't see the `system:1.0-SNAPSHOT` image, then check the Maven build log for any potential errors.
 
-Running an InstantOn application image locally
-
-If a host system is running the Linux kernel 5.9 or greater with the X86-64/AMD64 processor, you can run an InstantOn application image by using Podman or Docker locally. The following command runs the `system` InstantOn application image with Podman:
+Now, you can run your InstantOn container image locally by the following command:
 
 [role=command]
 ----
@@ -157,14 +157,18 @@ podman run \
   system:1.0-SNAPSHOT
 ----
 
+The `--cap-add` option grants the `CHECKPOINT_RESTORE` and `SETPCAP` capabilities. The `SYS_PTRACE` capability is not required to run the InstantOn container image.
+
+After you see the following message, your application server is ready:
+
 [source, role="no_copy"]
 ----
 [AUDIT   ] CWWKF0011I: The defaultServer server is ready to run a smarter planet. The defaultServer server started in 0.298 seconds.
 ----
 
-Notice that the startup time is less than 1 second. After you finish checking out the application, stop the Open Liberty server by pressing `CTRL+C` in the command-line session where you ran the server.
+Notice that the startup time is less than 1 second. Point your browser to the http://localhost:9080/system/properties URL. You see a result in JSON format with the system properties of your container JVM. After you finish checking out the application, stop the Open Liberty server by pressing `CTRL+C` in the command-line session where you ran the container.
 
-For more information on InstantOn application image, see https://openliberty.io/docs/latest/instanton.html.
+
 
 // =================================================================================================
 // Creating a Kubernetes cluster on EKS
@@ -172,7 +176,7 @@ For more information on InstantOn application image, see https://openliberty.io/
 
 == Creating a Kubernetes cluster on EKS
 
-Before you can deploy your microservices, you must create a Kubernetes cluster.
+Before you can deploy your microservice, you must create a Kubernetes cluster.
 
 // =================================================================================================
 // Configuring the AWS CLI
@@ -322,22 +326,22 @@ The `openlibertyapplications` CRD defines a set of configurations for deploying 
 
 
 // =================================================================================================
-// Deploying microservices to Amazon Elastic Container Service for Kubernetes (EKS)
+// Deploying your InstantOn image to Amazon Elastic Container Service for Kubernetes (EKS)
 // =================================================================================================
 
-== Deploying microservices to Amazon Elastic Container Service for Kubernetes (EKS)
+== Deploying your InstantOn image to Amazon Elastic Container Service for Kubernetes (EKS)
 
-In this section, you will learn how to deploy microservices in Open Liberty containers to a Kubernetes cluster on EKS. You will build and containerize the `system` microservice, push them to a container registry, and then deploy them to your Kubernetes cluster. 
+In this section, you will learn how to push your InstantOn image built in the previous section to a container registry, and then deploy it to your Kubernetes cluster on EKS by using Open Liberty Operator with Semeru Cloud Compiler enablement.
 
 // =================================================================================================
-// Pushing the images to a docker registry
+// Pushing the images to a container registry
 // =================================================================================================
 
-=== Pushing the images to a container registry
+=== Pushing the image to a container registry
 
-Pushing the images to a registry allows the cluster to create pods by using your container images. The registry that you are using is called Amazon Elastic Container Registry (ECR).
+Pushing the image to a registry allows the cluster to create pods by using your container image. The registry that you are using is called Amazon Elastic Container Registry (ECR).
 
-Authenticate to the registry using the following command so you can push or pull images using Podman:
+Authenticate to the registry using the following command so you can push or pull image using Podman:
 
 Start by running the `get-login` command. The `get-login` command returns the `[password_string]`. The `password-stdin` flag provides the password returned by `get-login`. Replace the `[aws_account_id]` and the `[region]` your account is configured under in the following `podman` command, that is used to authenticate your Podman client.
 
@@ -385,39 +389,42 @@ podman push [system-repository-uri]:1.0-SNAPSHOT
 ```
 
 // =================================================================================================
-// Deploying the microservices
+// Deploying the image
 // =================================================================================================
 
-=== Deploying the microservices
+=== Deploying the image
 
-Now that your container images are built, deploy them using a Kubernetes resource definition.
+You can configure the specifics of the Open Liberty Operator-controlled deployment with a YAML configuration file.
 
-A Kubernetes resource definition is a yaml file that contains a description of all your deployments, services, or any other resources that you want to deploy. All resources can also be deleted from the cluster by using the same yaml file that you used to deploy them. The `kubernetes.yaml` resource definition file is provided for you. If you are interested in learning more about the Kubernetes resource definition, check out the https://openliberty.io/guides/kubernetes-intro.html[Deploying microservices to Kubernetes^] guide. We can enable Semeru Cloud Compiler by turning `enable` to `true
- 
 [role="code_command hotspot", subs="quotes"]
 ----
-#Update the `kubernetes.yaml` file in the `start` directory.#
-`kubernetes.yaml`
+#Create the deploy.yaml configuration file in the start directory.#
+`deploy.yaml`
 ----
 
-kubernetes.yaml
+deploy.yaml
 
 [source, yaml, linenums, role='code_column']
 
 ----
-include::finish/kubernetes.yaml[]
+include::finish/deploy.yaml[]
 ----
-[role="edit_command_text"]
-Update `[system-repository-uri]` in [hotspot=7 hotspot=39]`applicationImage` field to point to your `system` repository URI.
 
+The [hotspot file=0]`deploy.yaml` file is configured to deploy one [hotspot=olapp file=0]`OpenLibertyApplication` resource, [hotspot=system file=0]`system`, which is controlled by the Open Liberty Operator.
 
-Deploy the application by running the following command:
+The [hotspot=sysImage file=0]`applicationImage` parameter defines what container image is deployed as part of the `OpenLibertyApplication` CRD. Update [hotspot=sysImage file=0]`[system-repository-uri]` in the `applicationImage` field to point to your `system` repository URI.
+
+TODO: need a paragraph to describe [hotspot=securityContext file=0]`securityContext` configuration.
+
+TODO: need a paragraph to describe [hotspot=semeruCloudCompiler file=0]`semeruCloudCompiler` configuration.
+
+Run the following command to deploy the `system` InstantOn image:
 [role=command]
 ```
-kubectl apply -f kubernetes.yaml
+kubectl apply -f deploy.yaml
 ```
 
-When the apps are deployed, run the following command to check the status of your pods:
+When the image is deployed, run the following command to check the status of your pods:
 
 [role=command]
 ```
@@ -435,9 +442,9 @@ system-semeru-compiler-1-58666f5d56-hs85x   1/1     Running   0          2m39s
 system-semeru-compiler-1-58666f5d56-s2pds   0/1     Pending   0          2m39s
 ----
 
-The `first` pod refers to the Open Liberty Operator. The `second` one for the microservice we deployed and the `last three` for the three replicas of Semeru Cloud Compiler.
+The `first` pod refers to the Open Liberty Operator. The `second` one is the `system` microservice and the `last three` for the three replicas of Semeru Cloud Compiler.
 
-To check the semeru cloud compiler and instanton `deployments`, execute the following command:
+To check the Semeru Cloud Compiler and InstantOn deployments, execute the following command:
 
 [role=command]
 ```
@@ -557,7 +564,7 @@ It is important to clean up your resources when you are finished with the guide 
 When you no longer need your deployed microservices, you can delete all kubernetes resources by running the `kubectl delete` command:
 [role='command']
 ```
-kubectl delete -f kubernetes.yaml
+kubectl delete -f deploy.yaml
 ```
 
 Delete the ECR repositories used to store the `system` image:
