@@ -52,7 +52,7 @@ The microservice you will deploy is called `system`. The `system` microservice r
 
 == Additional prerequisites
 
-You must run this guide in a Linux environment with the X86-64/AMD64 processor and either of the following versions:
+You must run this guide in a Linux environment with the X86-64/AMD64 processor and the following version:
 
 * *Ubuntu:* kernel version must be 5.9 or greater
 * *RHEL:*   version must be 9.0 or greater
