@@ -53,6 +53,7 @@ The microservice you will deploy is called `system`. The `system` microservice r
 == Additional prerequisites
 
 You must run this guide in a Linux environment.
+
 * *Linux:* You need to use kernel version of 5.9 or greater for Ubuntu or RHEL 9.0+ along with the X86-64/AMD64 processor.
 
 Before you begin, the following additional tools need to be installed on your Linux:
