@@ -27,13 +27,6 @@ NOTE: This repository contains the guide documentation source. To view the guide
 
 Explore how to speed up your containers by using Open Liberty InstantOn and improve the CPU and memory usage by enabling Semeru Cloud Compiler in your deployment to Amazon Elastic Container Service for Kubernetes (EKS) on Amazon Web Services (AWS). 
 
-:kube: Kubernetes
-:hashtag: #
-:win: WINDOWS
-:mac: MAC
-:linux: LINUX
-:system-api: http://[hostname]:31000/system/properties
-:inventory-api: http://[hostname]:32000/inventory/systems
 
 
 // =================================================================================================
@@ -60,10 +53,9 @@ The microservice you will deploy is called `system`. The `system` microservice r
 == Additional prerequisites
 
 You must run this guide in a Linux environment.
-
-Before you begin, the following additional tools need to be installed:
-
 * *Linux:* You need to use kernel version of 5.9 or greater for Ubuntu or RHEL 9.0+ along with the X86-64/AMD64 processor.
+
+Before you begin, the following additional tools need to be installed on your Linux:
 
 * *Podman:* You need containerization software for building containers. Kubernetes supports various container types, but you will need the latest available version of Podman in this guide. For installation instructions, refer to the official https://podman.io/docs/installation documentation.
 
@@ -84,11 +76,11 @@ include::{common-includes}/gitclone.adoc[]
 
 // no "try what you'll build" section in this guide because it would be too long due to all setup the user will have to do.
 
-== Building your InstantOn container image 
+== Building your InstantOn image 
 
-To speed up your container startup time, build your container with the Open Liberty InstantOn.
+To speed up your container startup time, build your container image with the Open Liberty InstantOn.
 
-Navigate to the `start` directory. Run the following command to build the `system` microservice:
+Navigate to the `start` directory. Run the following command to build and package the `system` microservice to a war file:
 
 [role=command]
 ```
@@ -112,23 +104,27 @@ include::finish/system/Containerfile[]
 
 Starting from the [hotspot=kernel-slim file=0]`kernel-slim-java17-openj9-ubi` Liberty container image, build the container image by copying the local [hotspot=config file=0]`config` directory, running the [hotspot=features file=0]`features.sh` script to add the Liberty features that your microservice is required to operate, copying your microservice [hotspot=war file=0]`war` file, and running the [hotspot=configure file=0]`configure.sh` script to get a pre-warmed container image.
 
-Finally, run the [hotspot=checkpoint file=0]`checkpoint.sh` script to make a checkpoint. The execution of the `checkpoint.sh` must be the last instruction during your container image build. This configuration performs the application process checkpoint and stores the process data as the last layer of the application container image. In this example, use the `afterAppStart` checkpoint option. See the https://openliberty.io/docs/latest/instanton.html#beforeAppStart[documentation^] for more information about the checkpoint options.
+Finally, run the [hotspot=checkpoint file=0]`checkpoint.sh` script to make a checkpoint. The execution of the `checkpoint.sh` must be the last instruction during your container image build. This configuration performs the application process checkpoint and stores the process data as the last layer of the application container image. In this guide, use the `afterAppStart` checkpoint option. For more information about the checkpoint options, see the https://openliberty.io/docs/latest/instanton.html#beforeAppStart[Faster startup with InstantOn^] documentation.
 
-Use the following Podman command to build the InstantOn application container image. To grant the necessary Linux capabilities to the container image build, this command must be run either as the `root` user or by using the `sudo` utility.
+Use the following command to build the InstantOn container image. To grant the necessary Linux capabilities to the container image build, this command must be run either as the `root` user or by using the `sudo` utility.
 
 [role=command]
 ----
 podman build \
    -t dev.local/system:1.0-SNAPSHOT \
    --cap-add=CHECKPOINT_RESTORE \
-   --cap-add=SYS_PTRACE\
+   --cap-add=SYS_PTRACE \
    --cap-add=SETPCAP \
-   --security-opt seccomp=unconfined system/.
+   --security-opt seccomp=unconfined \
+   system/.
 ----
 
 The three `--cap-add` options grant the three Linux capabilities that CRIU requires to perform the application process checkpoint during the container image build. The `--security-opt` option grants access to all Linux system calls to the container image build.
 
-When the build finishes, run the following command to list all local images:
+
+For more information to build the InstantOn image by Docker, see the https://openliberty.io/docs/latest/instanton.html#three_step_process[Building the InstantOn image by using the three-step process with Docker or Podman^] documentation.
+
+To verify that the image is built, run the following command to list all local container images:
 
 [role=command]
 ```
@@ -141,14 +137,12 @@ Verify that the `system:1.0-SNAPSHOT` image is listed among them, for example:
 ----
 REPOSITORY                        TAG
 dev.local/system                  1.0-SNAPSHOT
-icr.io/appcafe/open-liberty       kernel-slim-java11-openj9-ubi       
+icr.io/appcafe/open-liberty       kernel-slim-java17-openj9-ubi       
 ----
 
 If you don't see the `system:1.0-SNAPSHOT` image, then check the Maven build log for any potential errors.
 
-Running an InstantOn application image locally
-
-If a host system is running the Linux kernel 5.9 or greater with the X86-64/AMD64 processor, you can run an InstantOn application image by using Podman or Docker locally. The following command runs the `system` InstantOn application image with Podman:
+Now, you can run your InstantOn container image locally by the following command:
 
 [role=command]
 ----
@@ -161,14 +155,18 @@ podman run \
   system:1.0-SNAPSHOT
 ----
 
+The `--cap-add` option grants the `CHECKPOINT_RESTORE` and `SETPCAP` capabilities. The `SYS_PTRACE` capability is not required to run the InstantOn container image.
+
+After you see the following message, your application server is ready:
+
 [source, role="no_copy"]
 ----
 [AUDIT   ] CWWKF0011I: The defaultServer server is ready to run a smarter planet. The defaultServer server started in 0.298 seconds.
 ----
 
-Notice that the startup time is less than 1 second. After you finish checking out the application, stop the Open Liberty server by pressing `CTRL+C` in the command-line session where you ran the server.
+Notice that the startup time is less than 1 second. Point your browser to the http://localhost:9080/system/properties URL. You see a result in JSON format with the system properties of your container JVM. After you finish checking out the application, stop the Open Liberty server by pressing `CTRL+C` in the command-line session where you ran the container.
 
-For more information on InstantOn application image, see https://openliberty.io/docs/latest/instanton.html.
+
 
 // =================================================================================================
 // Creating a Kubernetes cluster on EKS
