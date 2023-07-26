@@ -104,7 +104,7 @@ Containerfile
 include::finish/system/Containerfile[]
 ----
 
-Starting from the [hotspot=kernel-slim file=0]`kernel-slim-java17-openj9-ubi` Liberty container image, build the container image by copying the local [hotspot=config file=0]`config` directory, running the [hotspot=features file=0]`features.sh` script to add the Liberty features that your microservice is required to operate, copying your microservice [hotspot=war file=0]`war` file, and running the [hotspot=configure file=0]`configure.sh` script to get a pre-warmed container image.
+Starting from the [hotspot=kernel-slim file=0]`kernel-slim-java17-openj9-ubi` Liberty container image, build the container image by copying the local [hotspot=config file=0]`config` directory to the container `config` directory, running the [hotspot=features file=0]`features.sh` script to add the Liberty features that your microservice is required to operate, copying your microservice [hotspot=war file=0]`war` file, and running the [hotspot=configure file=0]`configure.sh` script to get a pre-warmed container image.
 
 Finally, run the [hotspot=checkpoint file=0]`checkpoint.sh` script to make a checkpoint. The execution of the `checkpoint.sh` must be the last instruction during your container image build. This configuration performs the application process checkpoint and stores the process data as the last layer of the application container image. In this guide, use the `afterAppStart` checkpoint option. For more information about the checkpoint options, see the https://openliberty.io/docs/latest/instanton.html#beforeAppStart[Faster startup with InstantOn^] documentation.
 
@@ -176,7 +176,7 @@ Notice that the startup time is less than 1 second. Point your browser to the ht
 
 == Creating a Kubernetes cluster on EKS
 
-Before you can deploy your microservices, you must create a Kubernetes cluster.
+Before you can deploy your microservice, you must create a Kubernetes cluster.
 
 // =================================================================================================
 // Configuring the AWS CLI
@@ -326,22 +326,22 @@ The `openlibertyapplications` CRD defines a set of configurations for deploying 
 
 
 // =================================================================================================
-// Deploying microservices to Amazon Elastic Container Service for Kubernetes (EKS)
+// Deploying your InstantOn image to Amazon Elastic Container Service for Kubernetes (EKS)
 // =================================================================================================
 
-== Deploying microservices to Amazon Elastic Container Service for Kubernetes (EKS)
+== Deploying your InstantOn image to Amazon Elastic Container Service for Kubernetes (EKS)
 
-In this section, you will learn how to deploy microservices in Open Liberty containers to a Kubernetes cluster on EKS. You will build and containerize the `system` microservice, push them to a container registry, and then deploy them to your Kubernetes cluster. 
+In this section, you will learn how to push your InstantOn image built in the previous section to a container registry, and then deploy it to your Kubernetes cluster on EKS by using Open Liberty Operator with Semeru Cloud Compiler enablement.
 
 // =================================================================================================
-// Pushing the images to a docker registry
+// Pushing the images to a container registry
 // =================================================================================================
 
-=== Pushing the images to a container registry
+=== Pushing the image to a container registry
 
-Pushing the images to a registry allows the cluster to create pods by using your container images. The registry that you are using is called Amazon Elastic Container Registry (ECR).
+Pushing the image to a registry allows the cluster to create pods by using your container image. The registry that you are using is called Amazon Elastic Container Registry (ECR).
 
-Authenticate to the registry using the following command so you can push or pull images using Podman:
+Authenticate to the registry using the following command so you can push or pull image using Podman:
 
 Start by running the `get-login` command. The `get-login` command returns the `[password_string]`. The `password-stdin` flag provides the password returned by `get-login`. Replace the `[aws_account_id]` and the `[region]` your account is configured under in the following `podman` command, that is used to authenticate your Podman client.
 
@@ -389,27 +389,25 @@ podman push [system-repository-uri]:1.0-SNAPSHOT
 ```
 
 // =================================================================================================
-// Deploying the microservices
+// Deploying the image
 // =================================================================================================
 
-=== Deploying the microservices
+=== Deploying the image
 
-Now that your container images are built, deploy them using a Kubernetes resource definition.
+You can configure the specifics of the Open Liberty Operator-controlled deployment with a YAML configuration file.
 
-A Kubernetes resource definition is a yaml file that contains a description of all your deployments, services, or any other resources that you want to deploy. All resources can also be deleted from the cluster by using the same yaml file that you used to deploy them. The `kubernetes.yaml` resource definition file is provided for you. If you are interested in learning more about the Kubernetes resource definition, check out the https://openliberty.io/guides/kubernetes-intro.html[Deploying microservices to Kubernetes^] guide. We can enable Semeru Cloud Compiler by turning `enable` to `true
- 
 [role="code_command hotspot", subs="quotes"]
 ----
-#Update the `kubernetes.yaml` file in the `start` directory.#
-`kubernetes.yaml`
+#Create the deploy.yaml configuration file in the start directory.#
+`deploy.yaml`
 ----
 
-kubernetes.yaml
+deploy.yaml
 
 [source, yaml, linenums, role='code_column']
 
 ----
-include::finish/kubernetes.yaml[]
+include::finish/deploy.yaml[]
 ----
 [role="edit_command_text"]
 Update `[system-repository-uri]` in [hotspot=7 hotspot=39]`applicationImage` field to point to your `system` repository URI.
