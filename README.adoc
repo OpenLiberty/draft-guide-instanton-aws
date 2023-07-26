@@ -409,17 +409,22 @@ deploy.yaml
 ----
 include::finish/deploy.yaml[]
 ----
-[role="edit_command_text"]
-Update `[system-repository-uri]` in [hotspot=7 hotspot=39]`applicationImage` field to point to your `system` repository URI.
 
+The [hotspot file=0]`deploy.yaml` file is configured to deploy one [hotspot=olapp file=0]`OpenLibertyApplication` resource, [hotspot=system file=0]`system`, which is controlled by the Open Liberty Operator.
 
-Deploy the application by running the following command:
+The [hotspot=sysImage file=0]`applicationImage` parameter defines what container image is deployed as part of the `OpenLibertyApplication` CRD. Update [hotspot=sysImage file=0]`[system-repository-uri]` in the `applicationImage` field to point to your `system` repository URI.
+
+TODO: need a paragraph to describe [hotspot=securityContext file=0]`securityContext` configuration.
+
+TODO: need a paragraph to describe [hotspot=semeruCloudCompiler file=0]`semeruCloudCompiler` configuration.
+
+Run the following command to deploy the `system` InstantOn image:
 [role=command]
 ```
-kubectl apply -f kubernetes.yaml
+kubectl apply -f deploy.yaml
 ```
 
-When the apps are deployed, run the following command to check the status of your pods:
+When the image is deployed, run the following command to check the status of your pods:
 
 [role=command]
 ```
@@ -437,9 +442,9 @@ system-semeru-compiler-1-58666f5d56-hs85x   1/1     Running   0          2m39s
 system-semeru-compiler-1-58666f5d56-s2pds   0/1     Pending   0          2m39s
 ----
 
-The `first` pod refers to the Open Liberty Operator. The `second` one for the microservice we deployed and the `last three` for the three replicas of Semeru Cloud Compiler.
+The `first` pod refers to the Open Liberty Operator. The `second` one is the `system` microservice and the `last three` for the three replicas of Semeru Cloud Compiler.
 
-To check the semeru cloud compiler and instanton `deployments`, execute the following command:
+To check the Semeru Cloud Compiler and InstantOn deployments, execute the following command:
 
 [role=command]
 ```
@@ -559,7 +564,7 @@ It is important to clean up your resources when you are finished with the guide 
 When you no longer need your deployed microservices, you can delete all kubernetes resources by running the `kubectl delete` command:
 [role='command']
 ```
-kubectl delete -f kubernetes.yaml
+kubectl delete -f deploy.yaml
 ```
 
 Delete the ECR repositories used to store the `system` image:
