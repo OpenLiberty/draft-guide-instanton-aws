@@ -14,8 +14,9 @@
 :page-description: Learn how to speed up your containers using Open Liberty InstantOn and improve the CPU and memory usage using Semeru Cloud Compiler on Amazon Web Services (AWS).
 :page-tags: ['Kubernetes', 'Docker', 'Cloud']
 :page-permalink: /guides/{projectid}
-:page-related-guides: ['kubernetes-intro', 'kubernetes-microprofile-config', 'kubernetes-microprofile-health', 'istio-intro']
+:page-related-guides: ['kubernetes-intro', `openliberty-operator-intro`, 'cloud-aws']
 :common-includes: https://raw.githubusercontent.com/OpenLiberty/guides-common/prod
+:imagesdir: /img/guide/{projectid}
 :source-highlighter: prettify
 :page-seo-title: Speeding up startup time using Open Liberty InstantOn and improving CPU and memory usage by enabling Semeru Cloud Compiler (SCC) in your deployment to Amazon Elastic Container Service for Kubernetes (EKS) on Amazon Web Services (AWS).
 :page-seo-description: A getting started tutorial with examples on how to containerize a Java microservice with Open Liberty InstantOn feature to speed up the startup time. To improve the CPU and memory usage, deploy your application by enabling Semeru Cloud Compiler (SCC) in your deploying to Amazon Elastic Kubernetes Service (EKS) on Amazon Web Services (AWS) by using Amazon Elastic Container Registry (ECR) as a private container registry.
@@ -45,6 +46,8 @@ Amazon Web Services (AWS) offers a managed Kubernetes service called Amazon Elas
 
 
 The microservice you will deploy is called `system`. The `system` microservice returns the JVM system properties of the running container. It also returns the pod’s name in the HTTP header, making replicas easy to distinguish from each other.
+
+image::deployment_diagram.png[Deployment,align="center"]
 
 // =================================================================================================
 // Prerequisites
