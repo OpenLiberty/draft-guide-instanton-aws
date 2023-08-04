@@ -30,19 +30,23 @@ spec:
       value: "message,trace,accessLog,ffdc,audit"
   # tag::securityContext[]
   securityContext:
+     # tag::runAsNonRoot[]
     runAsNonRoot: true
+     # end::runAsNonRoot[]
     privileged: false
     allowPrivilegeEscalation: true
+     # tag::capabailities[]
     capabilities:
       add:
       - CHECKPOINT_RESTORE
       - SETPCAP
       drop:
       - ALL
+      # end::capabailities[]
   # end::securityContext[]
   # tag::semeruCloudCompiler[]
   semeruCloudCompiler:
     enable: true
-    replicas: 3
+    replicas: 1
   # end::semeruCloudCompiler[]
 # end::system[]
