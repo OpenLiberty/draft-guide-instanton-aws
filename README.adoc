@@ -419,7 +419,12 @@ The [hotspot=sysImage file=0]`applicationImage` parameter defines what container
 
 In [hotspot=securityContext file=0]`securityContext` configuration, the [hotspot=runAsNonRoot file=0]`runAsNonRoot` cofiguration specifies that for any configuration in the pod, all processes run with a non-root user ID. With the [hotspot=capabilities file=0]`capabailities` configuration, we are only adding the the  `CHECKPOINT_RESTORE` and `SETCAP` capabilities for our InstantOn image and dropping all the remaining ones.
 
-TODO: need a paragraph to describe [hotspot=semeruCloudCompiler file=0]`semeruCloudCompiler` configuration.
+
+//NEED TO EXPLAIN WHY 3-1 RATIO ?
+
+Semeru Cloud Comiler provides real-time code compiling as a process, independent of the application.
+
+By setting [hotspot=enable file=0]`enable` parameter to `true` in the [hotspot=semeruCloudCompiler file=0]`semeruCloudCompiler` configuration, we can get our application access to the Semeru Cloud Compiler.
 
 Run the following command to deploy the `system` InstantOn image:
 [role=command]
@@ -443,7 +448,7 @@ system-deployment-6d559bbcf9-xt7t6          1/1     Running   0          8m40s
 system-semeru-compiler-1-58666f5d56-dmhm8   1/1     Pending   0          2m39s
 ----
 
-The `first` pod refers to the Open Liberty Operator. The `second` one is the `system` microservice and the `last` one for the Semeru Cloud Compiler.
+The `first` pod refers to the Open Liberty Operator podThe `second` one is the `system` microservice pod and the `last` one for the Semeru Cloud Compiler. Notice that there are 3 instances of the system service and 1 instance of the Semeru Cloud Compiler. 
 
 Run the following command to check the startup time. 
 

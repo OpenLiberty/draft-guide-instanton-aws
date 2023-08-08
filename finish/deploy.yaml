@@ -46,7 +46,9 @@ spec:
   # end::securityContext[]
   # tag::semeruCloudCompiler[]
   semeruCloudCompiler:
+  # tag::enable[]
     enable: true
+    # end::enable[]
     replicas: 1
   # end::semeruCloudCompiler[]
 # end::system[]
