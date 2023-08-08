@@ -44,6 +44,9 @@ spec:
       - ALL
       # end::capabailities[]
   # end::securityContext[]
+  httpGet:
+      port: 9443
+      scheme: HTTPS
   # tag::semeruCloudCompiler[]
   semeruCloudCompiler:
   # tag::enable[]
