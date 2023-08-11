@@ -443,9 +443,11 @@ If all the pods are healthy and running, you see an output similar to the follow
 [source, role="no_copy"]
 ----
 NAME                                        READY   STATUS    RESTARTS   AGE
-olo-controller-manager-58d7788bd-nk7cc      1/1     Running   0          44m
-system-deployment-6d559bbcf9-xt7t6          1/1     Running   0          8m40s
-system-semeru-compiler-1-58666f5d56-dmhm8   1/1     Pending   0          2m39s
+olo-controller-manager-77c75c9778-9csp9     1/1     Running   0          9m26s
+system-84d4d8695d-2pz6x                     0/1     Pending   0          88s
+system-84d4d8695d-cdfcm                     0/1     Pending   0          88s
+system-84d4d8695d-s8ls2                     0/1     Pending   0          88s
+system-semeru-compiler-1-768fdb59b9-6vvc5   1/1     Running   0          115s
 ----
 
 The `first` pod refers to the Open Liberty Operator podThe `second` one is the `system` microservice pod and the `last` one for the Semeru Cloud Compiler. Notice that there are 3 instances of the system service and 1 instance of the Semeru Cloud Compiler. 
