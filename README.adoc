@@ -1,4 +1,3 @@
-//
 // Copyright (c) 2023 IBM Corporation and others.
 // Licensed under Creative Commons Attribution-NoDerivatives
 // 4.0 International (CC BY-ND 4.0)
@@ -11,7 +10,7 @@
 :page-layout: guide-multipane
 :page-duration: 45 minutes
 :page-releasedate: 2023-08-31
-:page-description: Learn how to speed up your containers using Open Liberty InstantOn and improve the CPU and memory usage using Semeru Cloud Compiler on Amazon Web Services (AWS).
+:page-description: Learn how to speed up the startup of your containers using Open Liberty InstantOn and improve the CPU and memory usage using Semeru Cloud Compiler on Amazon Web Services (AWS).
 :page-tags: ['Kubernetes', 'Docker', 'Cloud']
 :page-permalink: /guides/{projectid}
 :page-related-guides: ['kubernetes-intro', `openliberty-operator-intro`, 'cloud-aws']
@@ -19,14 +18,14 @@
 :imagesdir: /img/guide/{projectid}
 :source-highlighter: prettify
 :page-seo-title: Speeding up startup time using Open Liberty InstantOn and improving CPU and memory usage by enabling Semeru Cloud Compiler (SCC) in your deployment to Amazon Elastic Container Service for Kubernetes (EKS) on Amazon Web Services (AWS).
-:page-seo-description: A getting started tutorial with examples on how to containerize a Java microservice with Open Liberty InstantOn feature to speed up the startup time. To improve the CPU and memory usage, deploy your application by enabling Semeru Cloud Compiler (SCC) in your deploying to Amazon Elastic Kubernetes Service (EKS) on Amazon Web Services (AWS) by using Amazon Elastic Container Registry (ECR) as a private container registry.
+:page-seo-description: A getting started tutorial with examples on how to containerize a Java microservice with Open Liberty InstantOn feature to speed up the startup time. To improve the CPU and memory usage, deploy your application by enabling Semeru Cloud Compiler (SCC) in your deplyoment to Amazon Elastic Kubernetes Service (EKS) on Amazon Web Services (AWS) by using Amazon Elastic Container Registry (ECR) as your private container registry.
 :guide-author: Open Liberty
 = Speeding up startup and improving CPU and memory usage of containers on Amazon Web Services
 
 [.hidden]
 NOTE: This repository contains the guide documentation source. To view the guide in published form, view it on the https://openliberty.io/guides/{projectid}.html[Open Liberty website^].
 
-Explore how to speed up your containers by using Open Liberty InstantOn and improve the CPU and memory usage by enabling Semeru Cloud Compiler in your deployment to Amazon Elastic Container Service for Kubernetes (EKS) on Amazon Web Services (AWS). 
+Explore how to speed up your containers startup time by using Open Liberty InstantOn and improve the CPU and memory usage by enabling Semeru Cloud Compiler in your deployment to Amazon Elastic Container Service for Kubernetes (EKS) on Amazon Web Services (AWS).
 
 
 
