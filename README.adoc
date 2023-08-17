@@ -416,9 +416,14 @@ The [hotspot file=0]`deploy.yaml` file is configured to deploy one [hotspot=olap
 
 The [hotspot=sysImage file=0]`applicationImage` parameter defines what container image is deployed as part of the `OpenLibertyApplication` CRD. Update [hotspot=sysImage file=0]`[system-repository-uri]` in the `applicationImage` field to point to your `system` repository URI.
 
-TODO: need a paragraph to describe [hotspot=securityContext file=0]`securityContext` configuration.
+In [hotspot=securityContext file=0]`securityContext` configuration, the [hotspot=runAsNonRoot file=0]`runAsNonRoot` cofiguration specifies that for any configuration in the pod, all processes run with a non-root user ID. With the [hotspot=capabilities file=0]`capabailities` configuration, we are only adding the the  `CHECKPOINT_RESTORE` and `SETCAP` capabilities for our InstantOn image and dropping all the remaining ones.
 
-TODO: need a paragraph to describe [hotspot=semeruCloudCompiler file=0]`semeruCloudCompiler` configuration.
+
+//NEED TO EXPLAIN WHY 3-1 RATIO ?
+
+Semeru Cloud Comiler provides real-time code compiling as a process, independent of the application.
+
+By setting [hotspot=enable file=0]`enable` parameter to `true` in the [hotspot=semeruCloudCompiler file=0]`semeruCloudCompiler` configuration, we can get our application access to the Semeru Cloud Compiler.
 
 Run the following command to deploy the `system` InstantOn image:
 [role=command]
@@ -437,28 +442,23 @@ If all the pods are healthy and running, you see an output similar to the follow
 [source, role="no_copy"]
 ----
 NAME                                        READY   STATUS    RESTARTS   AGE
-olo-controller-manager-58d7788bd-nk7cc      1/1     Running   0          44m
-system-deployment-6d559bbcf9-xt7t6          1/1     Running   0          8m40s
-system-semeru-compiler-1-58666f5d56-dmhm8   0/1     Pending   0          2m39s
-system-semeru-compiler-1-58666f5d56-hs85x   1/1     Running   0          2m39s
-system-semeru-compiler-1-58666f5d56-s2pds   0/1     Pending   0          2m39s
+olo-controller-manager-77c75c9778-9csp9     1/1     Running   0          9m26s
+system-84d4d8695d-2pz6x                     0/1     Pending   0          88s
+system-84d4d8695d-cdfcm                     0/1     Pending   0          88s
+system-84d4d8695d-s8ls2                     0/1     Pending   0          88s
+system-semeru-compiler-1-768fdb59b9-6vvc5   1/1     Running   0          115s
 ----
 
-The `first` pod refers to the Open Liberty Operator. The `second` one is the `system` microservice and the `last three` for the three replicas of Semeru Cloud Compiler.
+The `first` pod refers to the Open Liberty Operator podThe `second` one is the `system` microservice pod and the `last` one for the Semeru Cloud Compiler. Notice that there are 3 instances of the system service and 1 instance of the Semeru Cloud Compiler. 
 
-To check the Semeru Cloud Compiler and InstantOn deployments, execute the following command:
+Run the following command to check the startup time. 
 
 [role=command]
 ```
-kubectl get deployments
+kubectl logs [system-pod]
 ```
-[source, role="no_copy"]
-----
-NAME                       READY   UP-TO-DATE   AVAILABLE   AGE
-olo-controller-manager     1/1     1            1           50m
-system-deployment          1/1     1            1           14m
-system-semeru-compiler-1   1/3     3            1           8m56s
-----
+
+Notice that the startup time is less than 1 second.
 
 === Making requests to the microservices
 
