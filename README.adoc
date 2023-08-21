@@ -36,6 +36,10 @@ Explore how to speed up your containers by using Open Liberty InstantOn and impr
 
 == What you'll learn
 
+InstantOn, a new feature within IBM WebSphere Liberty, enables you to take full advantage of cloud infrastructure with fast and dynamic start-up—without inheriting compromises commonly found when compiling your code to native images. InstantOn will allow you to easily adopt serverless practices while enabling you to respond faster to ever-changing workload demands, improve sustainability and reduce costs by dynamically adjusting infrastructure to demand and facilitate innovation through modern application architectures and serverless. 
+
+The Semeru Cloud Compiler provides just-in-time code compiling as a process independent of the application virtual machine. Its benefits include CPU and memory utilization optimization in the application VM and improved resiliency.
+
 You will learn how to containize a microservice with Open Liberty InstantOn and deploy the container with Semeru Cloud Compiler server instance enablement to a Kubernetes cluster on Amazon Elastic Container Service for Kubernetes (EKS).
 
 https://openliberty.io/docs/latest/instanton.html[Open Liberty InstantOn^] provides fast startup times for MicroProfile and Jakarta EE applications. Your applications can start in milliseconds, without compromising on throughput, memory, development-production parity, or Java language features.
@@ -43,7 +47,6 @@ https://openliberty.io/docs/latest/instanton.html[Open Liberty InstantOn^] provi
 Semeru Cloud Compiler server instance uses the https://eclipse.dev/openj9/docs/jitserver[JITServer^] (Just-in-Time Server) technology that is included in the https://www.eclipse.org/openj9/[Eclipse OpenJ9 JVM^]. It decouples the JIT compiler from the JVM to prevent your Java application from suffering possible negative effects due to CPU and memory consumption caused by JIT compilation in the JVM.
 
 Amazon Web Services (AWS) offers a managed Kubernetes service called Amazon Elastic Container Service for kubernetes (EKS). EKS simplifies the process of running Kubernetes on AWS without needing to install or maintain your Kubernetes control plane. It provides a hosted kubernetes cluster where you can deploy your microservices. You will use EKS with Amazon Elastic Container Registry (ECR). Amazon ECR is a private registry that is used to store and distribute your container images. Note, because EKS is not free, there is a small cost that is associated with running this guide. See the official https://aws.amazon.com/eks/pricing/[Amazon EKS pricing^] documentation for more information.
-
 
 The microservice you will deploy is called `system`. The `system` microservice returns the JVM system properties of the running container. It also returns the pod’s name in the HTTP header, making replicas easy to distinguish from each other.
 
