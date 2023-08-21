@@ -11,22 +11,22 @@
 :page-layout: guide-multipane
 :page-duration: 45 minutes
 :page-releasedate: 2023-08-31
-:page-description: Learn how to speed up your containers using Open Liberty InstantOn and improve the CPU and memory usage using Semeru Cloud Compiler on Amazon Web Services (AWS).
+:page-description: Learn how to speed up your containers using Open Liberty InstantOn and improve the CPU and memory usage using Semeru Cloud Compiler server instance on Amazon Web Services (AWS).
 :page-tags: ['Kubernetes', 'Docker', 'Cloud']
 :page-permalink: /guides/{projectid}
 :page-related-guides: ['kubernetes-intro', `openliberty-operator-intro`, 'cloud-aws']
 :common-includes: https://raw.githubusercontent.com/OpenLiberty/guides-common/prod
 :imagesdir: /img/guide/{projectid}
 :source-highlighter: prettify
-:page-seo-title: Speeding up startup time using Open Liberty InstantOn and improving CPU and memory usage by enabling Semeru Cloud Compiler (SCC) in your deployment to Amazon Elastic Container Service for Kubernetes (EKS) on Amazon Web Services (AWS).
-:page-seo-description: A getting started tutorial with examples on how to containerize a Java microservice with Open Liberty InstantOn feature to speed up the startup time. To improve the CPU and memory usage, deploy your application by enabling Semeru Cloud Compiler (SCC) in your deploying to Amazon Elastic Kubernetes Service (EKS) on Amazon Web Services (AWS) by using Amazon Elastic Container Registry (ECR) as a private container registry.
+:page-seo-title: Speeding up startup time using Open Liberty InstantOn and improving CPU and memory usage by enabling Semeru Cloud Compiler (SCC) server instance in your deployment to Amazon Elastic Container Service for Kubernetes (EKS) on Amazon Web Services (AWS).
+:page-seo-description: A getting started tutorial with examples on how to containerize a Java microservice with Open Liberty InstantOn feature to speed up the startup time. To improve the CPU and memory usage, deploy your application by enabling Semeru Cloud Compiler (SCC) server instance in your deploying to Amazon Elastic Kubernetes Service (EKS) on Amazon Web Services (AWS) by using Amazon Elastic Container Registry (ECR) as a private container registry.
 :guide-author: Open Liberty
-= Speeding up startup and improving CPU and memory usage of containers on Amazon Web Services
+= Faster startup and better CPU and memory use in containers on Amazon Web Services
 
 [.hidden]
 NOTE: This repository contains the guide documentation source. To view the guide in published form, view it on the https://openliberty.io/guides/{projectid}.html[Open Liberty website^].
 
-Explore how to speed up your containers by using Open Liberty InstantOn and improve the CPU and memory usage by enabling Semeru Cloud Compiler in your deployment to Amazon Elastic Container Service for Kubernetes (EKS) on Amazon Web Services (AWS). 
+Explore how to speed up your containers by using Open Liberty InstantOn and improve the CPU and memory usage by enabling Semeru Cloud Compiler server instance in your deployment to Amazon Elastic Container Service for Kubernetes (EKS) on Amazon Web Services (AWS). 
 
 
 
@@ -36,11 +36,11 @@ Explore how to speed up your containers by using Open Liberty InstantOn and impr
 
 == What you'll learn
 
-You will learn how to containize a microservice with Open Liberty InstantOn and deploy the container with Semeru Cloud Compiler enablement to a Kubernetes cluster on Amazon Elastic Container Service for Kubernetes (EKS).
+You will learn how to containize a microservice with Open Liberty InstantOn and deploy the container with Semeru Cloud Compiler server instance enablement to a Kubernetes cluster on Amazon Elastic Container Service for Kubernetes (EKS).
 
 https://openliberty.io/docs/latest/instanton.html[Open Liberty InstantOn^] provides fast startup times for MicroProfile and Jakarta EE applications. Your applications can start in milliseconds, without compromising on throughput, memory, development-production parity, or Java language features.
 
-Semeru Cloud Compiler uses the https://eclipse.dev/openj9/docs/jitserver[JITServer^] (Just-in-Time Server) technology that is included in the https://www.eclipse.org/openj9/[Eclipse OpenJ9 JVM^]. It decouples the JIT compiler from the JVM to prevent your Java application from suffering possible negative effects due to CPU and memory consumption caused by JIT compilation in the JVM.
+Semeru Cloud Compiler server instance uses the https://eclipse.dev/openj9/docs/jitserver[JITServer^] (Just-in-Time Server) technology that is included in the https://www.eclipse.org/openj9/[Eclipse OpenJ9 JVM^]. It decouples the JIT compiler from the JVM to prevent your Java application from suffering possible negative effects due to CPU and memory consumption caused by JIT compilation in the JVM.
 
 Amazon Web Services (AWS) offers a managed Kubernetes service called Amazon Elastic Container Service for kubernetes (EKS). EKS simplifies the process of running Kubernetes on AWS without needing to install or maintain your Kubernetes control plane. It provides a hosted kubernetes cluster where you can deploy your microservices. You will use EKS with Amazon Elastic Container Registry (ECR). Amazon ECR is a private registry that is used to store and distribute your container images. Note, because EKS is not free, there is a small cost that is associated with running this guide. See the official https://aws.amazon.com/eks/pricing/[Amazon EKS pricing^] documentation for more information.
 
@@ -334,7 +334,7 @@ The `openlibertyapplications` CRD defines a set of configurations for deploying 
 
 == Deploying your InstantOn image to Amazon Elastic Container Service for Kubernetes (EKS)
 
-In this section, you will learn how to push your InstantOn image built in the previous section to a container registry, and then deploy it to your Kubernetes cluster on EKS by using Open Liberty Operator with Semeru Cloud Compiler enablement.
+In this section, you will learn how to push your InstantOn image built in the previous section to a container registry, and then deploy it to your Kubernetes cluster on EKS by using Open Liberty Operator with Semeru Cloud Compiler server instance enablement.
 
 // =================================================================================================
 // Pushing the images to a container registry
@@ -417,14 +417,11 @@ The [hotspot file=0]`deploy.yaml` file is configured to deploy one [hotspot=olap
 
 The [hotspot=sysImage file=0]`applicationImage` parameter defines what container image is deployed as part of the `OpenLibertyApplication` CRD. Update [hotspot=sysImage file=0]`[system-repository-uri]` in the `applicationImage` field to point to your `system` repository URI.
 
-In [hotspot=securityContext file=0]`securityContext` configuration, the [hotspot=runAsNonRoot file=0]`runAsNonRoot` cofiguration specifies that for any configuration in the pod, all processes run with a non-root user ID. With the [hotspot=capabilities file=0]`capabailities` configuration, we are only adding the the  `CHECKPOINT_RESTORE` and `SETCAP` capabilities for our InstantOn image and dropping all the remaining ones.
+In [hotspot=securityContext file=0]`securityContext` configuration, the [hotspot=runAsNonRoot file=0]`runAsNonRoot` cofiguration specifies that for any configuration in the pod, all processes run with a non-root user ID. With the [hotspot=capabilities file=0]`capabilities` configuration, only the `CHECKPOINT_RESTORE` and `SETCAP` capabilities are added to the InstantOn image and all the remaining ones are dropped.
 
+Semeru Cloud Comiler server instance provides real-time code compiling as a process, independent of the application.
 
-//NEED TO EXPLAIN WHY 3-1 RATIO ?
-
-Semeru Cloud Comiler provides real-time code compiling as a process, independent of the application.
-
-By setting [hotspot=enable file=0]`enable` parameter to `true` in the [hotspot=semeruCloudCompiler file=0]`semeruCloudCompiler` configuration, we can get our application access to the Semeru Cloud Compiler.
+Set [hotspot=enable file=0]`enable` parameter to `true` in the [hotspot=semeruCloudCompiler file=0]`semeruCloudCompiler` configuration to grant application access to the Semeru Cloud Compiler server instance .
 
 Run the following command to deploy the `system` InstantOn image:
 [role=command]
@@ -450,7 +447,7 @@ system-84d4d8695d-s8ls2                     0/1     Pending   0          88s
 system-semeru-compiler-1-768fdb59b9-6vvc5   1/1     Running   0          115s
 ----
 
-The `first` pod refers to the Open Liberty Operator podThe `second` one is the `system` microservice pod and the `last` one for the Semeru Cloud Compiler. Notice that there are 3 instances of the system service and 1 instance of the Semeru Cloud Compiler. 
+The first pod refers to the Open Liberty Operator pod. The next three pods are the `system` microservice pods and the last one is for the Semeru Cloud Compiler server instance . Notice that there are 3 instances of the system service and 1 instance of the Semeru Cloud Compiler server instance . 
 
 Run the following command to check the startup time. 
 
@@ -458,6 +455,9 @@ Run the following command to check the startup time.
 ```
 kubectl logs [system-pod]
 ```
+
+OUTPUT!!
+
 
 Notice that the startup time is less than 1 second.
 

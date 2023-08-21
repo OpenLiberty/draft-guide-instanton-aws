@@ -35,14 +35,14 @@ spec:
      # end::runAsNonRoot[]
     privileged: false
     allowPrivilegeEscalation: true
-     # tag::capabailities[]
+     # tag::capabilities[]
     capabilities:
       add:
       - CHECKPOINT_RESTORE
       - SETPCAP
       drop:
       - ALL
-      # end::capabailities[]
+      # end::capabilities[]
   # end::securityContext[]
   httpGet:
       port: 9443
