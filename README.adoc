@@ -86,7 +86,7 @@ include::{common-includes}/gitclone.adoc[]
 
 == Building your InstantOn image 
 
-To speed up your container startup time, build your container image with the Open Liberty InstantOn.
+To speed up your container startup time, build your container image with the Open Liberty InstantOn. The InstantOn image checkpointed at build time
 
 Navigate to the `start` directory. Run the following command to build and package the `system` microservice to a war file:
 
@@ -450,7 +450,7 @@ system-84d4d8695d-s8ls2                     0/1     Pending   0          88s
 system-semeru-compiler-1-768fdb59b9-6vvc5   1/1     Running   0          115s
 ----
 
-The first pod refers to the Open Liberty Operator pod. The next three pods are the `system` microservice pods and the last one is for the Semeru Cloud Compiler server instance . Notice that there are 3 instances of the system service and 1 instance of the Semeru Cloud Compiler server instance . 
+The first pod refers to the Open Liberty Operator pod. The next three pods are the `system` microservice pods and the last one is for the Semeru Cloud Compiler server instance. Notice that there are 3 instances of the system service and 1 instance of the Semeru Cloud Compiler server instance. This is because the number of services should exceed the number of the Semeru Cloud Compiler server instances in order to conserve resources. Additionally, having just 1 replica is sufficient to use the minimum resources needed to demonstrate the scenario in this guide.
 
 Run the following command to check the startup time. 
 
