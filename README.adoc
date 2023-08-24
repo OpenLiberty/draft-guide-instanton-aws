@@ -46,11 +46,13 @@ https://openliberty.io/docs/latest/instanton.html[Open Liberty InstantOn^] provi
 
 Semeru Cloud Compiler server instance uses the https://eclipse.dev/openj9/docs/jitserver[JITServer^] (Just-in-Time Server) technology that is included in the https://www.eclipse.org/openj9/[Eclipse OpenJ9 JVM^]. It decouples the JIT compiler from the JVM to prevent your Java application from suffering possible negative effects due to CPU and memory consumption caused by JIT compilation in the JVM.
 
+image::JIT_diagram.png[Deployment,align="center"]
+
 Amazon Web Services (AWS) offers a managed Kubernetes service called Amazon Elastic Container Service for kubernetes (EKS). EKS simplifies the process of running Kubernetes on AWS without needing to install or maintain your Kubernetes control plane. It provides a hosted kubernetes cluster where you can deploy your microservices. You will use EKS with Amazon Elastic Container Registry (ECR). Amazon ECR is a private registry that is used to store and distribute your container images. Note, because EKS is not free, there is a small cost that is associated with running this guide. See the official https://aws.amazon.com/eks/pricing/[Amazon EKS pricing^] documentation for more information.
 
 The microservice you will deploy is called `system`. The `system` microservice returns the JVM system properties of the running container. It also returns the pod’s name in the HTTP header, making replicas easy to distinguish from each other.
 
-image::deployment_diagram.png[Deployment,align="center"]
+image::checkpoint_diagram.png[Deployment,align="center"]
 
 // =================================================================================================
 // Prerequisites
@@ -86,7 +88,9 @@ include::{common-includes}/gitclone.adoc[]
 
 == Building your InstantOn image 
 
-To speed up your container startup time, build your container image with the Open Liberty InstantOn. The InstantOn image checkpointed at build time
+To speed up your container startup time, build your container image with the Open Liberty InstantOn. The InstantOn image checkpointed at build time. You just need to select which of the two points you want your checkpoint to be taken.
+
+The InstantOn capability in the Open Liberty runtime uses the IBM Semeru JDK and a Linux technology called Checkpoint/Restore in Userspace (CRIU) to take a checkpoint, or a point-in-time snapshot, of the application process. This checkpoint can then be restored very quickly to bring the application process back into the state it was in when the checkpoint was taken. Each restored application process runs without first having to go through the whole startup sequence, saving up to 90% of startup time (depending on your application). InstantOn requires very little modification of your Java application to make this improvement happen.
 
 Navigate to the `start` directory. Run the following command to build and package the `system` microservice to a war file:
 
@@ -112,7 +116,10 @@ include::finish/system/Containerfile[]
 
 Starting from the [hotspot=kernel-slim file=0]`kernel-slim-java17-openj9-ubi` Liberty container image, build the container image by copying the local [hotspot=config file=0]`config` directory to the container `config` directory, running the [hotspot=features file=0]`features.sh` script to add the Liberty features that your microservice is required to operate, copying your microservice [hotspot=war file=0]`war` file, and running the [hotspot=configure file=0]`configure.sh` script to get a pre-warmed container image.
 
-Finally, run the [hotspot=checkpoint file=0]`checkpoint.sh` script to make a checkpoint. The execution of the `checkpoint.sh` must be the last instruction during your container image build. This configuration performs the application process checkpoint and stores the process data as the last layer of the application container image. In this guide, use the `afterAppStart` checkpoint option. For more information about the checkpoint options, see the https://openliberty.io/docs/latest/instanton.html#beforeAppStart[Faster startup with InstantOn^] documentation.
+Finally, run the [hotspot=checkpoint file=0]`checkpoint.sh` script to make a checkpoint. The execution of the `checkpoint.sh` must be the last instruction during your container image build. 
+This configuration performs the application process checkpoint and stores the process data as the last layer of the application container image. In this guide, use the `afterAppStart` checkpoint option. 
+This phase has the potential to provide the fastest startup time when restoring the application instance. The checkpoint happens after all configured applications are reported as started. 
+This phase happens before opening any ports for listening to incoming requests for the applications. For more information about the checkpoint options, see the link:https://openliberty.io/docs/latest/instanton.html#beforeAppStart[Faster startup with InstantOn^] documentation.
 
 Use the following command to build the InstantOn container image. To grant the necessary Linux capabilities to the container image build, this command must be run either as the `root` user or by using the `sudo` utility.
 
@@ -174,7 +181,7 @@ After you see the following message, your application server is ready:
 
 Notice that the startup time is less than 1 second. Point your browser to the http://localhost:9080/system/properties URL. You see a result in JSON format with the system properties of your container JVM. After you finish checking out the application, stop the Open Liberty server by pressing `CTRL+C` in the command-line session where you ran the container.
 
-
+If you'd like like to compare startup times with and withot InstantOn you can do so by following the instructions provided in link:https://openliberty.io/blog/2023/06/29/rapid-startup-instanton.html[How to package your cloud-native Java application for rapid startup^].
 
 // =================================================================================================
 // Creating a Kubernetes cluster on EKS
