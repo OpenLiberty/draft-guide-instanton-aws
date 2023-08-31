@@ -30,23 +30,20 @@ spec:
       value: "message,trace,accessLog,ffdc,audit"
   # tag::securityContext[]
   securityContext:
-     # tag::runAsNonRoot[]
+    # tag::runAsNonRoot[]
     runAsNonRoot: true
-     # end::runAsNonRoot[]
+    # end::runAsNonRoot[]
     privileged: false
     allowPrivilegeEscalation: true
-     # tag::capabilities[]
+    # tag::capabilities[]
     capabilities:
       add:
-      - CHECKPOINT_RESTORE
-      - SETPCAP
+        - CHECKPOINT_RESTORE
+        - SETPCAP
       drop:
-      - ALL
+        - ALL
       # end::capabilities[]
   # end::securityContext[]
-  httpGet:
-      port: 9443
-      scheme: HTTPS
   # tag::semeruCloudCompiler[]
   semeruCloudCompiler:
   # tag::enable[]

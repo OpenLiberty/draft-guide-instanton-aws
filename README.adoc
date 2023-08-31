@@ -77,6 +77,13 @@ Before you begin, the following additional tools need to be installed on your Li
 
 * *AWS CLI:* You will need to use the AWS Command Line Interface (CLI). For this guide, use AWS CLI Version 2, which is intended for use in production environment. All installers for AWS CLI version 2 include and use an embedded copy of Python, independent of any other Python version that you might have installed. Install the AWS CLI by following the instructions in the official https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html[Installing the AWS CLI^] documentation. 
 
+To verify that the AWS CLI is installed correctly, run the following command:
+
+[role=command]
+```
+aws --version
+```
+
 // =================================================================================================
 // Getting Started
 // =================================================================================================
@@ -527,9 +534,9 @@ kubectl get nodes -o wide
 
 Then, `curl` or visit the following URLs to access your microservices, substituting the appropriate hostname:
 
-* `http://[hostname]:31000/system/properties`
+* `https://[hostname]:31000/system/properties`
 
-This URL returns system properties and the name of the pod in an HTTP header called `X-Pod-Name`. To view the header, you can use the `-I` option in the `curl` when you make a request to `http://[hostname]:31000/system/properties`. 
+This URL returns system properties and the name of the pod in an HTTP header called `X-Pod-Name`. To view the header, you can use the `-I` option in the `curl` when you make a request to `https://[hostname]:31000/system/properties`. 
 
 // =================================================================================================
 // Testing microservices that are running on AWS EKS
