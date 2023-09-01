@@ -38,8 +38,8 @@ public class SystemEndpointIT {
     public static void oneTimeSetup() {
         String clusterIp = System.getProperty("cluster.ip");
         String nodePort = System.getProperty("system.node.port");
-
-        clusterUrl = "http://" + clusterIp + ":" + nodePort + "/system/properties/";
+        clusterUrl = "https://" + clusterIp + ":" + nodePort + "/system/properties/";
+        // clusterUrl = "http://" + clusterIp + ":" + nodePort + "/system/properties/";
     }
 
     @BeforeEach

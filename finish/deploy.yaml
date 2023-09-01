@@ -12,16 +12,11 @@ spec:
   pullPolicy: Always
   manageTLS: false
   replicas: 2
-  # resources:
-  #   limits:
-  #     cpu: 1
-  #     memory: 512Mi
-  #   requests:
-  #     cpu: 500m
-  #     memory: 256Mi
   service:
     type: ClusterIP
     port: 9443
+    targetPort: 9443
+    nodePort: 31000
   expose: true
   env:
     - name: WLP_LOGGING_MESSAGE_FORMAT
