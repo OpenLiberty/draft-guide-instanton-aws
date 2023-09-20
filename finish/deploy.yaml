@@ -10,19 +10,25 @@ spec:
   applicationImage: [system-repository-uri]:1.0-SNAPSHOT
   # end::sysImage[]
   pullPolicy: Always
-  manageTLS: false
+  manageTLS: true
   replicas: 2
   service:
-    type: ClusterIP
+  # tag::serviceType[]
+    type: NodePort
+    # end::serviceType[]
     port: 9443
     targetPort: 9443
     nodePort: 31000
   expose: true
+  route:
+    certificateSecretRef: tls-secret
   env:
     - name: WLP_LOGGING_MESSAGE_FORMAT
       value: "json"
     - name: WLP_LOGGING_MESSAGE_SOURCE
       value: "message,trace,accessLog,ffdc,audit"
+    - name: WLP_LOGGING_CONSOLE_FORMAT
+      value: simple 
   # tag::securityContext[]
   securityContext:
     # tag::runAsNonRoot[]
