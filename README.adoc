@@ -434,7 +434,7 @@ The [hotspot file=0]`deploy.yaml` file is configured to deploy one [hotspot=olap
 
 The [hotspot=sysImage file=0]`applicationImage` parameter defines what container image is deployed as part of the `OpenLibertyApplication` CRD. Update [hotspot=sysImage file=0]`[system-repository-uri]` in the `applicationImage` field to point to your `system` repository URI.
 
-Setting [hotspot=serviceType file=0] `type` to `NodePort` exposes the Service on the node's IP at a static port which is 31000 in this case
+Setting [hotspot=serviceType file=0]`type` to `NodePort` exposes the Service on the node's IP at a static port which is 31000 in this case
 
 In [hotspot=securityContext file=0]`securityContext` configuration, the [hotspot=runAsNonRoot file=0]`runAsNonRoot` cofiguration specifies that for any configuration in the pod, all processes run with a non-root user ID. With the [hotspot=capabilities file=0]`capabilities` configuration, only the `CHECKPOINT_RESTORE` and `SETCAP` capabilities are added to the InstantOn image and all the remaining ones are dropped.
 
