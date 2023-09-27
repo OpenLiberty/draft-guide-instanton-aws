@@ -40,8 +40,6 @@ import java.security.cert.X509Certificate;
 public class SystemEndpointIT {
 
     private static String clusterUrl;
-
-    // private Client client;
     private ResteasyClient client;
     private Response response;
     private SSLContext sslContext;
