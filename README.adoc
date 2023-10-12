@@ -69,7 +69,7 @@ Before you begin, the following additional tools need to be installed on your Li
 
 * *Podman:* You need containerization software for building containers. Kubernetes supports various container types, but you will need the latest available version of Podman in this guide. For installation instructions, refer to the official https://podman.io/docs/installation documentation.
 
-* *kubectl:* You need the Kubernetes command-line tool `kubectl` to interact with your Kubernetes cluster. See the official https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl[Install and Set Up kubectl^] documentation for information about downloading and setting up `kubectl` on your platform.
+* *kubectl:* You need the Kubernetes command-line tool `kubectl` version within the range of 1.25 to interact with your Kubernetes cluster. See the official https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl[Install and Set Up kubectl^] documentation for information about downloading and setting up `kubectl` on your platform.
 
 * *IAM Authenticator:* You need to install the AWS IAM Authenticator for Kubernetes to allow IAM authentication for your Amazon EKS cluster. Follow the https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html[Installing aws-iam-authenticator^] instructions to install the AWS IAM Authenticator on your platform. 
 
@@ -240,33 +240,12 @@ secret_key     ****************ABc0 shared-credentials-file
 
 === Provisioning a cluster
 
-The `eksctl` CLI tool greatly simplifies the process of creating clusters on EKS. To create your cluster, use the `eksctl create cluster` command:
-
+You can provision your cluster and push the InstantOn image to a container registry by running the `buildCluster` script. Navigate to the `scripts` directory and run the following command.
 [role=command]
 ```
-eksctl create cluster --name=guide-cluster --nodes=1 --node-type=t2.small
+./buildCluster.sh
 ```
-
-Running this command creates a cluster that is called `guide-cluster` that uses a single `t2.small` Amazon Elastic Compute Cloud (EC2) instance as the worker node. The `t2.small` EC2 instance is not included in the AWS free tier. See the official https://aws.amazon.com/ec2/pricing/on-demand/[Amazon EC2 pricing^] documentation for more details. When the cluster is created, you see an output similar to the following:
-
-[source, role="no_copy"]
-```
-[✔]  EKS cluster "guide-cluster" in "us-east-2" region is ready
-```
-
-After your cluster is ready, EKS connects `kubectl` to the cluster. Verify that you're connected to the cluster by checking the cluster's nodes:
-
-[role=command]
-```
-kubectl get nodes
-```
-
-[source, role="no_copy"]
-----
-NAME                            STATUS    ROLES     AGE       VERSION
-ip.us-east-2.compute.internal   Ready     <none>    7m        v1.11.5
-----
-
+For more information on provisioning a cluster and pushing an image to a container registry, see the https://openliberty.io/guides/cloud-aws.html[Deploying microservices to Amazon Web Services] documentation.
 
 // =================================================================================================
 // Installing the Operator
@@ -351,62 +330,7 @@ The `openlibertyapplications` CRD defines a set of configurations for deploying 
 
 == Deploying your InstantOn image to Amazon Elastic Container Service for Kubernetes (EKS)
 
-In this section, you will learn how to push your InstantOn image built in the previous section to a container registry, and then deploy it to your Kubernetes cluster on EKS by using Open Liberty Operator with Semeru Cloud Compiler server instance enablement.
-
-// =================================================================================================
-// Pushing the images to a container registry
-// =================================================================================================
-
-=== Pushing the image to a container registry
-
-Pushing the image to a registry allows the cluster to create pods by using your container image. The registry that you are using is called Amazon Elastic Container Registry (ECR).
-
-Authenticate to the registry using the following command so you can push or pull image using Podman:
-
-Start by running the `get-login` command. The `get-login` command returns the `[password_string]`. The `password-stdin` flag provides the password returned by `get-login`. Replace the `[aws_account_id]` and the `[region]` your account is configured under in the following `podman` command, that is used to authenticate your Podman client.
-
-[role=command]
-```
-aws ecr get-login-password | podman login --username AWS --password-stdin [aws_account_id].dkr.ecr.[region].amazonaws.com
-```
-
-After you are authenticated, create a repository for the instanton container image, in the private Amazon ECR registry.
-Next, make a repository to store the `system` image:
-[role=command]
-```
-aws ecr create-repository --repository-name instantonaws/system
-```
-
-You will see an output similar to the following:
-
-[source, role="no_copy"]
-```
-{
-    "repository": {
-        "repositoryArn": "arn:aws:ecr:us-east-2:439159788015:repository/instantonaws/system",
-        "registryId": "439159788015",
-        "repositoryName": "instantonaws/system",
-        "repositoryUri": "439159788015.dkr.ecr.us-east-2.amazonaws.com/instantonaws/system",
-        "createdAt": "2023-07-20T10:30:04-07:00",
-    ...
-}
-```
-
-// Tagging images
-Next, you need to tag your container image with the relevant data about your registry:
-
-[role=command]
-```
-podman tag dev.local/system:1.0-SNAPSHOT [system-repository-uri]:1.0-SNAPSHOT
-```
-
-// Pushing images
-Finally, push your image to the registry:
-
-[role=command]
-```
-podman push [system-repository-uri]:1.0-SNAPSHOT
-```
+In this section, you will learn how to deploy your InstantOn to your Kubernetes cluster on EKS by using Open Liberty Operator with Semeru Cloud Compiler server instance enablement.
 
 // =================================================================================================
 // Deploying the image
@@ -465,7 +389,7 @@ system-84d778df7d-vtjxr                     1/1     Running   0          13s
 system-semeru-compiler-1-6549bf9974-r6wl5   1/1     Running   0          39s
 ----
 
-The first pod refers to the Open Liberty Operator pod. The next three pods are the `system` microservice pods and the last one is for the Semeru Cloud Compiler server instance. Notice that there are 3 instances of the system service and 1 instance of the Semeru Cloud Compiler server instance. This is because the number of services should exceed the number of the Semeru Cloud Compiler server instances in order to conserve resources. Additionally, having just 1 replica is sufficient to use the minimum resources needed to demonstrate the scenario in this guide.
+The first pod refers to the Open Liberty Operator pod. The next two pods are the `system` microservice pods and the last one is for the Semeru Cloud Compiler server instance. Notice that there are two instances of the system service and one instance of the Semeru Cloud Compiler server instance. This is because the number of services should exceed the number of the Semeru Cloud Compiler server instances in order to conserve resources. Additionally, having just 1 replica is sufficient to use the minimum resources needed to demonstrate the scenario in this guide.
 
 Run the following command to check the startup time. 
 

@@ -1,9 +1,10 @@
 #!/bin/bash
 
+apt-get update -y
+
 # install Minikube prereqs for none driver
 
 # install conntrack
-apt-get update -y
 apt-get install -y conntrack
 sysctl fs.protected_regular=0
 

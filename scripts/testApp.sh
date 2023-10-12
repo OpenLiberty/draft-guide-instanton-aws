@@ -45,3 +45,49 @@ minikube stop
 
 # Clear .m2 cache
 rm -rf ~/.m2
+
+
+# #!/bin/bash
+# set -euxo pipefail
+
+# minikube start
+# minikube status
+# #kubectl cluster-info
+# #kubectl get services --all-namespaces
+# #kubectl config view
+# eval "$(minikube docker-env)"
+
+# # Test app
+
+# mvn -ntp -Dhttp.keepAlive=false \
+#     -Dmaven.wagon.http.pool=false \
+#     -Dmaven.wagon.httpconnectionManager.ttlSeconds=120 \
+#     -q clean package
+
+# docker build -t system:1.0-SNAPSHOT system/.
+
+# sed -i 's/\[system-repository-uri\]/system/g' deploy.yaml
+
+# kubectl apply -f deploy.yaml
+
+# sleep 120
+
+# kubectl get pods
+
+# minikube ip
+
+# curl "http://$(minikube ip):31000/system/properties"
+
+# mvn -ntp failsafe:integration-test "-Dcluster.ip=$(minikube ip)"
+# mvn -ntp failsafe:verify
+
+# kubectl logs "$(kubectl get pods -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}' | grep system)"
+
+# kubectl delete -f deploy.yaml
+
+# eval "$(minikube docker-env -u)"
+# minikube stop
+
+# # Clear .m2 cache
+# rm -rf ~/.m2
+
